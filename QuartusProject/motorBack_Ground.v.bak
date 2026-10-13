@@ -1,0 +1,71 @@
+module motorBack_Ground(
+	input reset,
+	input enable,
+	input clk,
+	input [1:0] Roll,
+	input WRoll,
+	input [5:0] x_tile,
+	input [4:0] y_tile,
+	input write,
+	input [7:0] color, 
+	output reg [7:0] colorOut,
+	output reg [16:0] address,
+	output reg done
+);
+	reg [7:0] right_edge [0:29];
+	reg [7:0] left_edge [0:29];
+	reg [7:0] down_edge [0:39];
+	reg [7:0] up_edge [0:39];
+	
+	reg [8:0] next_x;
+	reg [7:0] next_y;
+	
+	reg [7:0] tileMap [0:29][0:39];
+	
+	always@(posedge clk or negedge reset)begin
+		if(!reset)begin 
+			for(i =0; i < 40; i = i +1)begin
+			
+				for(j = 0; j < 30;j = j + 1)begin 
+				
+					tileMap[j][i] = 0;
+					
+				end
+			end	
+		end else begin
+			if(!WRoll)begin
+				for(i = 0; i < 40; i = i +1)begin
+					left_edge [i] = tileMap[0][i];
+					right_edge [i] = tileMap[29][i];
+				end
+				for(i = 0; i < 30; i = i +1)begin
+					up_edge [i] = tileMap[i][0];
+					down_edge [i] = tileMap[i][39];
+				end
+			end else begin
+			
+			end
+			
+			if(write)begin
+				tileMap[y_tile][x_tile] = color;
+			end
+			
+			colorOut = tileMap[next_y/8][next_x/8];
+			
+		end
+	end
+	
+	contadorVid(
+			.reset(reset),
+			.clk(clk),
+			.enable(enable),
+			.x(next_x),
+			.y(next_y),
+			.address(address),
+			.done(done)
+		);
+	
+	
+endmodule
+	
+	

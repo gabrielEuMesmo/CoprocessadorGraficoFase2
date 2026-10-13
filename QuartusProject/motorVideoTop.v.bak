@@ -1,0 +1,168 @@
+module motorVideoTop (
+    input  wire        clk,
+    input  wire        reset,       // Ativo baixo (mesma polaridade dos submódulos)
+    input  wire        vsync,
+    input  wire        layer_order,
+
+    // ---- Escrita no motorPol ----
+    input  wire [1:0]  pol_polAddress,
+    input  wire [1:0]  pol_cordenada,
+    input  wire [8:0]  pol_x,
+    input  wire [7:0]  pol_y,
+    input  wire [7:0]  pol_cor,
+    input  wire        pol_visivel,
+    input  wire        pol_trapezio,
+    input  wire        pol_salva,
+
+    // ---- Escrita no motorBack_Ground ----
+    input  wire [1:0]  bg_Roll,
+    input  wire        bg_WRoll,
+    input  wire [5:0]  bg_x_tile,
+    input  wire [4:0]  bg_y_tile,
+    input  wire        bg_write,
+    input  wire [7:0]  bg_color,
+
+    // ---- Escrita na OAM do motorSprites_Blitter ----
+    input  wire [5:0]  spr_write_idx,
+    input  wire [31:0] spr_write_data,
+    input  wire        spr_write_en,
+
+    // ---- Saída única: camada ativa no momento, segundo a MEF ----
+    output reg  [16:0] address,
+    output reg  [7:0]  pixel,
+    output wire        camada_ativa   // alto sempre que Bg/Sprt/Pol estiver desenhando
+);
+
+    wire enableBg, enableSprt, enablePol;
+    wire doneBg, doneSprt, donePol;
+
+    MEF_geral_layer u_mef (
+        .reset      (reset),
+        .layer_order(layer_order),
+        .clk        (clk),
+        .doneBg     (doneBg),
+        .doneSprt   (doneSprt),
+        .donePol    (donePol),
+        .enableBg   (enableBg),
+        .enableSprt (enableSprt),
+        .enablePol  (enablePol),
+        .vsync      (vsync)
+    );
+
+    // ================= Background =================
+    wire [7:0]  bg_pixel;
+    wire [16:0] bg_address;
+	 wire bgPulseEnable;
+	 
+	 rising_edge_detector  (
+        clk,
+        reset,
+        enableBG,
+        bgPulseEnable
+    );
+
+    motorBack_Ground u_bg (
+        .reset   (reset),
+        .enable  (bgPulseEnable),
+        .clk     (clk),
+        .Roll    (bg_Roll),
+        .WRoll   (bg_WRoll),
+        .x_tile  (bg_x_tile),
+        .y_tile  (bg_y_tile),
+        .write   (bg_write),
+        .color   (bg_color),
+        .colorOut(bg_pixel),
+        .address (bg_address),
+        .done    (doneBg)
+    );
+
+    // ================= Polígonos =================
+    wire [7:0]  pol_pixel;
+    wire [16:0] pol_address;
+	 wire polPulseEnable;
+	 
+	 rising_edge_detector (
+        clk,
+        reset,
+        enablePol,
+        polPulseEnable
+    );
+
+    motorPol u_pol (
+        .enable    (polPulseEnable),
+        .clk       (clk),
+        .polAddress(pol_polAddress),
+        .cordenada (pol_cordenada),
+        .x         (pol_x),
+        .y         (pol_y),
+        .cor       (pol_cor),
+        .visivel   (pol_visivel),
+        .trapezio  (pol_trapezio),
+        .salva     (pol_salva),
+        .reset     (reset),
+        .memAdress (pol_address),
+        .pixelS    (pol_pixel),
+        .done      (donePol)
+    );
+
+    // ================= Sprites =================
+    // enableSprt é nível -> vira pulso de start_draw só na borda
+    // de subida, pra não reiniciar o Blitter em loop dentro do
+    // mesmo estado SPRT.
+    wire [7:0]  spr_pixel;
+    wire [16:0] spr_address;
+    wire        spr_start_pulse;
+
+    rising_edge_detector u_edge_sprt (
+        clk,
+        reset,
+        enableSprt,
+        spr_start_pulse
+    );
+
+    motorSprites_Blitter u_sprt (
+        .clk           (clk),
+        .reset         (reset),
+        .start_draw    (spr_start_pulse),
+        .done_draw     (doneSprt),
+        .spr_write_idx (spr_write_idx),
+        .spr_write_data(spr_write_data),
+        .spr_write_en  (spr_write_en),
+        .address       (spr_address),
+        .color         (spr_pixel)
+    );
+
+    // ================= Mux final =================
+    // A MEF garante que só um enable fica ativo por vez, então
+    // esse if/else em cadeia é só uma seleção segura — não existe
+    // disputa real de prioridade entre os ramos.
+    always @(*) begin
+        if (enableBg) begin
+            address = bg_address;
+            pixel   = bg_pixel;
+        end else if (enablePol) begin
+				if(pol_pixel > 0)begin
+					address = pol_address;
+					pixel   = pol_pixel;
+					wren = 1'b1;
+				end else begin
+					wren = 1'b0;
+				end
+        end else if(enableSprt) begin
+				if(spr_pixel > 0)begin
+					address = spr_address;
+					pixel   = spr_pixel;
+					wren = 1'b1;
+				end else begin
+					wren = 1'b0;
+				end
+        end else begin
+            address = 17'd0;
+            pixel   = 8'h00;
+				wren = 1'b0;
+        end
+    end
+
+    assign camada_ativa = enableBg | enableSprt | enablePol;
+
+endmodule

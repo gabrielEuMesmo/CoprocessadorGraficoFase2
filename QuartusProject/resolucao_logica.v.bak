@@ -1,0 +1,60 @@
+module resolucao_logica(   input wire clock,     // 25 MHz
+    input wire reset,     // Active high
+	input color_temp,							// Pixel color data (RRRGGGBB)
+    output [8:0] next_x_log,  // x-coordinate of NEXT pixel that will be drawn
+    output [7:0] next_y_log,  // y-coordinate of NEXT pixel that will be drawn
+    output wire hsync,    // HSYNC (to VGA connector)
+    output wire vsync,    // VSYNC (to VGA connctor)
+    output [7:0] red,     // RED (to resistor DAC VGA connector)
+    output [7:0] green,   // GREEN (to resistor DAC to VGA connector)
+    output [7:0] blue,    // BLUE (to resistor DAC to VGA connector)
+    output sync,          // SYNC to VGA connector
+    output clk,           // CLK to VGA connector
+    output blank          // BLANK to VGA connector
+);
+reg clock_25;
+wire [9:0] next_x, next_y;
+wire [7:0] color_in;
+reg [1:0] count;
+//
+
+assign next_x_log = next_x/2;
+assign next_y_log = next_y/2;
+
+//Divisor de clock
+
+always @(posedge clock or posedge reset) begin
+        if (reset) begin
+            count   <= 2'b00;
+            clock_25 <= 1'b0;
+        end else begin
+            count   <= count + 1'b1;
+            clock_25 <= count[1]; // O bit 1 alterna a cada 2 pulsos do clk_in
+        end
+    end
+	 assign readVGA = (next_y_log*320) + next_x_log;
+RAMVIDEO(
+	clock,
+	data,
+	readVGA,
+	wraddress,
+	wren,
+	color_in);
+
+	 
+ vga_driver (
+    clock_25,     // 25 MHz
+    reset,     // Active high
+    color_in, // Pixel color data (RRRGGGBB)
+    next_x,  // x-coordinate of NEXT pixel that will be drawn
+    next_y,  // y-coordinate of NEXT pixel that will be drawn
+    hsync,    // HSYNC (to VGA connector)
+    vsync,    // VSYNC (to VGA connctor)
+    red,     // RED (to resistor DAC VGA connector)
+    green,   // GREEN (to resistor DAC to VGA connector)
+    blue,    // BLUE (to resistor DAC to VGA connector)
+    sync,          // SYNC to VGA connector
+    clk,           // CLK to VGA connector
+    blank          // BLANK to VGA connector
+);
+endmodule

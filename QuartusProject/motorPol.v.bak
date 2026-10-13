@@ -1,0 +1,95 @@
+module motorPol(
+	input clk,
+	input [2:0] polAddress,
+	input [1:0] cordenada,
+	input [8:0] x,
+	input [7:0] y,
+	input [7:0] cor,
+	input visivel,
+	input trapezio,
+	input salva,
+	input reset,
+	output [16:0] memAdress,
+	output [7:0] pixelS,
+	output done
+
+);
+
+	reg [77:0] pol [0:8];
+	
+	wire [7:0] pixel [0:8];
+	reg [8:0] next_x;
+	reg [7:0] next_y;
+	
+	integer i;
+	integer e;
+	integer u;
+	
+	always @(posedge salva or negedge reset)begin 
+		if(!reset)begin
+			for(i = 0; i < 8; i = i +1)begin
+				pol[i] = 0;
+			end
+		end else begin
+			if (cordenada == 0) begin
+				pol[polAddress]= {visivel, trapezio, cor, pol[polAddress][67:51], pol[polAddress][50:34], pol[polAddress][33:17], x, y};
+			end else if (cordenada == 1) begin
+				pol[polAddress]= {visivel, trapezio, cor, pol[polAddress][67:51], pol[polAddress][50:34], x, y, pol[polAddress][16:0]};
+			end else if (cordenada == 2) begin
+				pol[polAddress]= {visivel, trapezio, cor, pol[polAddress][67:51], x, y, pol[polAddress][33:17], pol[polAddress][16:0]};
+			end else if (cordenada == 3) begin
+				pol[polAddress]= {visivel, trapezio, cor, x, y, pol[polAddress][50:34], pol[polAddress][33:17], pol[polAddress][16:0]};
+			end
+		end
+		
+	end
+	
+	generate
+        for (e = 0; e < 8; e = e + 1) begin : gen_adders
+            poligono_gerador(
+					 .trapezio(pol[e][76]),
+					 .x(next_x),
+					 .y(next_y),
+
+					 .x0(pol[e][16:8]),
+					 .y0(pol[e][7:0]),
+
+					 .x1(pol[e][33:25]),
+					 .y1(pol[e][24:17]),
+
+					 .x2(pol[e][50:42]),
+					 .y2(pol[e][41:34]),
+					 
+					 .x3(pol[e][67:59]),
+					 .y3(pol[e][58:51]),
+
+					 .color(pol[e][75:68]),
+
+					 .pixel(pixel [0:8])
+				);
+
+        end
+    endgenerate
+	 
+	 always @(*)begin
+		for(u = 0; u < 8; u = u - 1)begin
+			if(pixel[u])begin
+				pixelS = pixel[u];
+			end else begin
+				pixelS = pixelS;
+			end
+		end
+	 
+	 end
+	 
+		contadorVid(
+			.reset(reset),
+			.clk(clk),
+			.enable(),
+			.x(next_x),
+			.y(next_y),
+			.address(address) 
+		);
+		
+
+endmodule

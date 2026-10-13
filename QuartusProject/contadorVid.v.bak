@@ -1,0 +1,26 @@
+module contadorVid(
+	input reset,
+	input clk,
+	input enable,
+	output [8:0] x,
+	output [7:0] y,
+	output address);
+	
+	reg [16:0] count;
+	reg contando;
+	always @(posedge clk or posedge enable or negedge reset)begin
+		if(~reset)begin
+			count = 0;
+		end else if(enable)begin
+			count = 0;
+			contando = 1;
+		end else if(clk && contando && ~enable)begin
+			count = count +1;
+		end else begin
+			count = count;
+		end
+	end
+endmodule
+		
+	
+	

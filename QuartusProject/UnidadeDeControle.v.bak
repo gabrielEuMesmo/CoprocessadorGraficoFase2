@@ -1,0 +1,50 @@
+module UnidadeDeControle(
+	input [31:0] instrucao,
+	input  wire        clk,
+	input  wire        ativa,
+
+   // ================= Saídas para Background =================
+   output reg [1:0]  bg_Roll,
+   output reg        bg_WRoll,
+   output reg [5:0]  bg_x_tile,
+   output reg [4:0]  bg_y_tile,
+   output reg        bg_salva_info,
+   output reg [7:0]  bg_color,
+
+   // ============= Saídas para Polígonos =================
+   output reg [1:0]  pol_Address,
+   output reg [1:0]  pol_cordenada,
+   output reg [8:0]  pol_x,
+   output reg [7:0]  pol_y,
+   output reg [7:0]  pol_cor,
+   output reg        pol_visivel,
+   output reg        pol_trapezio,
+   output reg        pol_salva_info,
+	output reg        pol_salva_config,
+
+   // ============= Saídas para Sprites =================
+   output reg [5:0]  spr_write_idx,
+   output reg [8:0]  spr_write_x,
+	output reg [7:0]  spr_write_y,
+	output reg [5:0]  spr_write_id,
+	output reg        spr_write_flip_x,
+	output reg        spr_write_flip_y,
+	output reg        spr_write_visivel,
+   output reg        spr_salva_info,
+	output reg        spr_salva_config,
+	
+	output reg ready,
+	output reg valid
+	
+);
+
+	
+
+
+
+
+
+
+endmodule
+   
+	
