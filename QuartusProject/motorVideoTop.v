@@ -136,45 +136,64 @@ module motorVideoTop (
         .address               (spr_address),
         .color                 (spr_pixel)
     );
+	 
+	 reg wren_pol_reg;
+	 reg [7:0]  pol_pixel_reg;
+    reg [16:0] pol_address_reg;
+	 wire clkP4;
+	 
+	 divisor_por_4 (
+			.clk_in(clk),  // Clock original de entrada
+			.reset(reset),   // Reset assíncrono (ativo em zero)
+			.clk_out(clkP4) // Clock de saída (frequência / 4)
+    );
+	 
+	 always @(posedge clkP4 or negedge reset)begin
+		if(!reset)begin
+			wren_pol_reg <= 0;
+		end else begin
+			if(enablePol)begin
+				if(pol_pixel > 0 )begin
+					pol_address_reg <= pol_address;
+					pol_pixel_reg <= pol_pixel;
+					wren_pol_reg <= 1;
+				end else begin
+					wren_pol_reg <= 0;
+				end
+			end
+		end
+	 end
 
     // ================= Mux final =================
     // A MEF garante que só um enable fica ativo por vez, então
     // esse if/else em cadeia é só uma seleção segura — não existe
     // disputa real de prioridade entre os ramos.
-    /*always @(*) begin
+    always @(*) begin
 			address = 17'd0;
          pixel   = 8'h00;
 			wren = 1'b0;
-        if (enableBg) begin
+        if (enableBg && !clk) begin
             address = bg_address;
             pixel   = bg_pixel;
 				wren = 1'b1;
         end else if (enablePol) begin
-				if(pol_pixel > 0)begin
-					address = pol_address;
-					pixel   = pol_pixel;
-					wren = 1'b1;
-				end else begin
-					wren = 1'b0;
-				end
+					address = pol_address_reg;
+					pixel   = pol_pixel_reg;
+					wren = wren_pol_reg;
         end else if(enableSprt) begin
-				if(spr_pixel > 0)begin
+				if(spr_pixel > 0 && !clk)begin
 					address = spr_address;
 					pixel   = spr_pixel;
 					wren = 1'b1;
 				end else begin
 					wren = 1'b0;
 				end
-        end else begin
-            address = 17'd0;
-            pixel   = 8'h00;
-				wren = 1'b0;
-        end
-    end*/
+        end 
+    end
 	 
 	 // ================= Mux final =================
  // Agora utilizando lógica sequencial (Flip-Flops) para blindar a RAM contra glitches
- always @(negedge clk or negedge reset) begin
+ /*always @(negedge clk or negedge reset) begin
     if (!reset) begin
         address <= 17'd0;
         pixel <= 8'h00;
@@ -205,7 +224,7 @@ module motorVideoTop (
             // address e pixel retêm o valor anterior de forma segura no flip-flop
         end
     end
- end
+ end */
 
     assign camada_ativa = enableBg | enableSprt | enablePol;
 

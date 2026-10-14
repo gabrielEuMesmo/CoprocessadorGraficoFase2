@@ -6,7 +6,7 @@ JedecChain;
 	P ActionCode(Ign)
 		Device PartName(SOCVHPS) MfrSpec(OpMask(0));
 	P ActionCode(Cfg)
-		Device PartName(5CSEMA5F31) Path("/home/aluno/Downloads/my_first_hps-fpga_base-20261013T130848Z-1-001/my_first_hps-fpga_base/output_files/") File("soc_system.sof") MfrSpec(OpMask(1));
+		Device PartName(5CSEMA5F31) Path("/home/aluno/Downloads/CoprocessadorGraficoFase2-main/QuartusProject/output_files/") File("soc_system.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 
