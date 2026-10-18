@@ -157,6 +157,18 @@ O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de
 
 ## Teste desenvolvido
 
+O teste de validação do sistema é a sequência completa (opção 9 do menu da aplicação em C). Ela envia ao coprocessador, pelo HPS, um pequeno programa gráfico que usa todas as instruções operacionais da ISA e aciona os três motores ao mesmo tempo. Com isso, ela realiza o caminho completo: aplicação em C, driver em Assembly, handshake, Unidade de Controle, motores gráficos, compositor e saída VGA. 
+
+A sequência de testes tem início com o envio da instrução `RESET`, limpando qualquer elemento que esteja na tela. Em seguida, a instrução `SPRITE_INFO 1, 5, 200, 200` é enviada para validar a escrita da parte info do sprite, com o padrão de identificação 5 e a posição (200, 200). O passo seguinte é o envio de `SPRITE_CONFIG 1, 1, 0, 1` para validar a escrita da parte config, testando se a imagem fica visível, sem espelhamento horizontal e com espelhamento vertical. O resultado visível esperado é o aparecimento do sprite já espelhado verticalmente, na posição 200, 200.
+
+Seguidamente, a instrução `BG_INFO 0, 2, 10, 20, 255` é enviada para validar a escrita de um tile no background utilizando a instrução `funcao` = 0. Como consequência, o monitor deverá exibir o tile posicionado nas coordenadas (10, 20) com o padrão 255 no tilemap.
+
+A quinta etapa envolve a repetição da instrução `POL_INFO 0, 0..3, ...` por quatro vezes para validar a escrita dos quatro vértices correspondentes ao polígono 0: (0,0), (100,0), (100,100) e (0,100). Nesta fase, nada aparece no monitor, visto que ainda falta definir a configuração de desenho da forma geométrica. O sexto teste utiliza a instrução `POL_CONFIG 0, 1, 0, 200` para validar a escrita de configuração final do polígono, ativando sua visibilidade com o formato `trapezio`= 0 e a cor 200. Então, a tela passará a mostrar um triângulo preenchido com a cor 200.
+
+Por fim, a instrução `TOGGLE_LAYER 1` é enviada para testar a definição da ordem em que as camadas são desenhadas. 
+
+Porém, há um problema nos testes desenvolvidos, pois as posições usadas não se sobrepõem. O polígono ocupa a região de 0,0 a 100,100, o sprite fica em 200,200. Por isso, a sequência não demonstra visualmente a prioridade entre as camadas de sprites e de polígonos. Para verificar essa funcionalidade, é necessário que o próprio usuário sobreponha um sprite com um polígono e altere a ordem das camadas. 
+
 # Testes e Erros
 
 ## Estabilização Temporal e Ajuste de Clock no Motor de Polígonos
