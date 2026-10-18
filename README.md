@@ -15,8 +15,6 @@
 
 A compreensão e o desenvolvimento deste coprocessador gráfico programável fundamentam-se em conceitos centrais da engenharia de computadores e sistemas digitais: a sincronização entre domínios heterogêneos de processamento por meio de protocolos de *handshake*, a dinâmica temporal imposta pelo atraso de propagação dos sinais lógicos, e o princípio de funcionamento e organização das unidades de controle em arquiteturas de computadores.
 
----
-
 ## Protocolo de Handshake e Aplicação no Sistema
 
 ### Conceito Teórico
@@ -33,15 +31,13 @@ No sistema desenvolvido na plataforma DE1-SoC, a comunicação se estabelece ent
 
 Como o HPS executa o *software* em alta velocidade e sob o escalonamento do sistema operacional, o envio de cada instrução de 32 bits requer coordenação rigorosa com a máquina de estados do coprocessador. O protocolo foi materializado através de portas de entrada/saída paralelas (PIOs):
 
-1. **`PIO_READY` (FPGA $\rightarrow$ HPS)**: O *driver* do HPS lê continuamente este registrador antes de transmitir qualquer instrução (`wait_ready`). A Unidade de Controle na FPGA só coloca `ready = 1` quando se encontra no estado `FETCH`, indicando capacidade de receber novas ordens.
-2. **`PIO_INST` (HPS $\rightarrow$ FPGA)**: Barramento de 32 bits no qual o HPS escreve a palavra da instrução montada.
-3. **`PIO_ATIVA` (HPS $\rightarrow$ FPGA)**: Após escrever a instrução, o HPS escreve `1` nesta porta para sinalizar a disponibilidade do dado. Na FPGA, esse sinal passa pelo módulo `rising_edge_detector.v`, gerando um pulso síncrono de exatamente um ciclo de *clock* (`ativa_pulse`), o que previne múltiplos disparos espúrios.
-4. **`PIO_VALID` (FPGA $\rightarrow$ HPS)**: Ao entrar no estado `DECODE`, a Unidade de Controle gera um pulso de validação (`valid_pulse`). Para evitar que o HPS perca esse pulso rápido de hardware (devido à latência de leitura do barramento pelo Linux), foi incorporado o módulo `pulse_latch.v`. Este circuito funciona como uma trava de bit (*sticky ACK*), mantendo a linha `valid` em nível alto até intervenção do HPS.
-5. **`PIO_CLEAR` (HPS $\rightarrow$ FPGA)**: Ao detectar `PIO_VALID == 1`, o HPS desativa `PIO_ATIVA` (escreve `0`) e pulsa a linha `PIO_CLEAR` (escreve `1`), acionando o reset da trava do `pulse_latch.v`. O *driver* aguarda a confirmação de descida de `PIO_VALID == 0`, finaliza a limpeza de `PIO_CLEAR` e encerra a transação com segurança garantida.
+1. **`PIO_READY` (FPGA → HPS)**: O *driver* do HPS lê continuamente este registrador antes de transmitir qualquer instrução (`wait_ready`). A Unidade de Controle na FPGA só coloca `ready = 1` quando se encontra no estado `FETCH`, indicando capacidade de receber novas ordens.
+2. **`PIO_INST` (HPS → FPGA)**: Barramento de 32 bits no qual o HPS escreve a palavra da instrução montada.
+3. **`PIO_ATIVA` (HPS → FPGA)**: Após escrever a instrução, o HPS escreve `1` nesta porta para sinalizar a disponibilidade do dado. Na FPGA, esse sinal passa pelo módulo `rising_edge_detector.v`, gerando um pulso síncrono de exatamente um ciclo de *clock* (`ativa_pulse`), o que previne múltiplos disparos espúrios.
+4. **`PIO_VALID` (FPGA → HPS)**: Ao entrar no estado `DECODE`, a Unidade de Controle gera um pulso de validação (`valid_pulse`). Para evitar que o HPS perca esse pulso rápido de hardware (devido à latência de leitura do barramento pelo Linux), foi incorporado o módulo `pulse_latch.v`. Este circuito funciona como uma trava de bit (*sticky ACK*), mantendo a linha `valid` em nível alto até intervenção do HPS.
+5. **`PIO_CLEAR` (HPS → FPGA)**: Ao detectar `PIO_VALID == 1`, o HPS desativa `PIO_ATIVA` (escreve `0`) e pulsa a linha `PIO_CLEAR` (escreve `1`), acionando o reset da trava do `pulse_latch.v`. O *driver* aguarda a confirmação de descida de `PIO_VALID == 0`, finaliza a limpeza de `PIO_CLEAR` e encerra a transação com segurança garantida.
 
 Esse fluxo estruturado elimina qualquer probabilidade de sobrescrita acidental de instruções no coprocessador e assegura que nenhuma instrução gráfica seja ignorada durante a execução da aplicação.
-
----
 
 ## Tempo de Propagação em Circuitos Digitais
 
@@ -69,9 +65,7 @@ No coprocessador gráfico em FPGA, coexistem blocos combinacionais extensos — 
 
 O tempo de propagação impacta o projeto em dois eixos vitais:
 1. **Integridade de Barramento e Handshake**: Entre a escrita do valor de 32 bits em `PIO_INST` pelo HPS e o disparo de `PIO_ATIVA`, os caminhos de roteamento da FPGA impõem tempos de propagação distintos a cada uma das 32 linhas de dados. A separação estrita adotada pelo *driver* — garantindo que os dados cheguem aos pinos do registrador antes da amostragem pelo pulso de ativação — previne que a Unidade de Controle capture valores intermediários ou incompletos decorrentes de tempos de propagação desiguais nas trilhas (*skew*).
-2. **Pipelining e Estados da Unidade de Controle**: A transição escalonada em ciclos definidos (`FETCH` $\rightarrow$ `DECODE` $\rightarrow$ `SAVE`) garante que a decodificação de campos (bits de cor, tamanho, inversão de eixos e posições) esteja completamente estabilizada na lógica combinacional antes da ativação dos pulsos de escrita nos módulos de vídeo (`spr_salva_info`, `pol_salva_config`, etc.), garantindo margens de temporização (*slack*) seguras em toda a compilação do Quartus Prime.
-
----
+2. **Pipelining e Estados da Unidade de Controle**: A transição escalonada em ciclos definidos (`FETCH` → `DECODE` → `SAVE`) garante que a decodificação de campos (bits de cor, tamanho, inversão de eixos e posições) esteja completamente estabilizada na lógica combinacional antes da ativação dos pulsos de escrita nos módulos de vídeo (`spr_salva_info`, `pol_salva_config`, etc.), garantindo margens de temporização (*slack*) seguras em toda a compilação do Quartus Prime.
 
 ## Funcionamento da Unidade de Controle em Processadores
 
