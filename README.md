@@ -166,7 +166,7 @@ A Instruction Set Architecture (ISA) estabelece a comunicação entre o software
 | `POL_INFO`  | 100 | X[28:21] · camada[20:19] (2) · vertice[18:17] (2) · x[16:8] (9) · y[7:0] (8)     | Define as coordenadas de um vértice de um polígono     |
 | `POL_CONFIG`  | 101| X[28:12] · camada[11:10] (2) · visivel[9] · trapezio[8] · cor[7:0] (8)     | Define cor, visibilidade e formato de um polígono   |
 | `BG_INFO`  | 110 | X[28:22] · funcao[21] · roll[20:19] (2) · x[18:13] (6) · y[12:8] (5) · cor[7:0] (8)    | Altera um tile do background ou o deslocamento (roll)    |
-| `TOGGLE_LAYER ` | 111 |X[28:1] · layer[0]  | Define a ordem de desenho das camadas    |
+| `TOGGLE_LAYER ` | 111 |X[28:1] · layer[0]  | Define a ordem de sobreposição das camadas    |
 
 ### Interface HPS-CoProcessador
 
