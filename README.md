@@ -4,7 +4,7 @@
 - [Fundamentação Teórica]()
 - [Manual do Sistema](#manual-do-sistema)
 - [Manual de Uso](#manual-de-uso)
-- [Conclusão](#conclusao)
+- [Conclusão](#conclusão)
 - [Referências](#referencias)
 
 
@@ -101,6 +101,7 @@ A opção 9 executa uma cena de demonstração completa (sprite, background, pol
 
 É possível concluir que os requisitos funcionais propostos para a segunda fase foram cumpridos com sucesso, visto que o sistema evoluiu de um conjunto de motores de desenho (sprites, polígonos e background) controlados manualmente por chaves e botões para um coprocessador programável, operando com uma ISA de 32 bits, com Unidade de Controlo, uso do protocolo de handshake e um driver em Assembly ARM acessado por uma aplicação em C, deixando o sistema preparado para a integração final com o jogo na fase 3. Além disso, o problema de sincronização visual apresentado no problema anterior foi solucionado, garantindo uma geração de imagem estável, outro requisito presente na fase 2. 
 
+# Referências
 
-
+Manual da placa (DE1-SoC) e do dispositivo Cyclone V pode ser consultados na página de [Recursos do LTEC3 - LEDS] https://sites.google.com/uefs.br/ltec3-leds/recursos
 
