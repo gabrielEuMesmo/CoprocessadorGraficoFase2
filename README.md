@@ -2,13 +2,128 @@
 
 ## Sumário
 - [Fundamentação Teórica](#fundamentação-teórica)
+  - [Protocolo de Handshake e Aplicação no Sistema](#protocolo-de-handshake-e-aplicação-no-sistema)
+  - [Tempo de Propagação em Circuitos Digitais](#tempo-de-propagação-em-circuitos-digitais)
+  - [Funcionamento da Unidade de Controle em Processadores](#funcionamento-da-unidade-de-controle-em-processadores)
 - [Manual do Sistema](#manual-do-sistema)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
 - [Conclusão](#conclusão)
-- [Referências](#referencias)
+- [Referências](#referências)
   
 # Fundamentação Teórica
+
+A compreensão e o desenvolvimento deste coprocessador gráfico programável fundamentam-se em conceitos centrais da engenharia de computadores e sistemas digitais: a sincronização entre domínios heterogêneos de processamento por meio de protocolos de *handshake*, a dinâmica temporal imposta pelo atraso de propagação dos sinais lógicos, e o princípio de funcionamento e organização das unidades de controle em arquiteturas de computadores.
+
+---
+
+## Protocolo de Handshake e Aplicação no Sistema
+
+### Conceito Teórico
+Em sistemas computacionais integrados, é recorrente a interação entre módulos que operam em frequências de *clock* diferentes, possuem latências de processamento distintas ou pertencem a domínios de temporização independentes (assíncronos entre si). Nesses cenários, a transferência de dados não pode ocorrer de forma incondicional ou contínua, pois haveria riscos de perda de dados (*overflow* do receptor) ou de leitura antes que os dados estivessem estáveis (*underflow* ou amostragem inconsistente).
+
+O **protocolo de *handshake*** (ou aperto de mão) é um mecanismo de controle de fluxo e sincronização baseado na troca explícita de sinais de requisição e reconhecimento (confirmação). Em sua forma completa de quatro fases (*four-phase handshake* ou *full handshake*):
+1. **Verificação e Envio**: O mestre averigua se o receptor está pronto (*Ready*). Se positivo, estabiliza os dados no barramento e ativa uma linha de requisição/ativação (*Request* ou *Ativa*).
+2. **Reconhecimento**: O receptor detecta o sinal de ativação, captura os dados estáveis e aciona uma linha de confirmação (*Acknowledge* ou *Valid*), sinalizando que recebeu ou iniciou o processamento.
+3. **Desativação da Requisição**: O mestre detecta a confirmação do receptor, abaixa a linha de requisição e sinaliza liberação (*Clear*).
+4. **Restabelecimento**: O receptor percebe a desativação da requisição, desativa o sinal de confirmação e volta ao estado de prontidão (*Ready*), concluindo o ciclo de comunicação.
+
+### Aplicação do Handshake no Projeto
+No sistema desenvolvido na plataforma DE1-SoC, a comunicação se estabelece entre o **HPS** (*Hard Processor System*, com processador ARM Cortex-A9 rodando Linux) e o **Coprocessador Gráfico** implementado na malha de lógica programável da FPGA (operando com relógio próprio). A ponte de comunicação utilizada é a *Lightweight HPS-to-FPGA AXI Bridge*, cujos registradores são mapeados pelo *driver* em Assembly ARM (`driver.S`) através do mapeamento de memória física `/dev/mem` via chamada de sistema `mmap`.
+
+Como o HPS executa o *software* em alta velocidade e sob o escalonamento do sistema operacional, o envio de cada instrução de 32 bits requer coordenação rigorosa com a máquina de estados do coprocessador. O protocolo foi materializado através de portas de entrada/saída paralelas (PIOs):
+
+1. **`PIO_READY` (FPGA $\rightarrow$ HPS)**: O *driver* do HPS lê continuamente este registrador antes de transmitir qualquer instrução (`wait_ready`). A Unidade de Controle na FPGA só coloca `ready = 1` quando se encontra no estado `FETCH`, indicando capacidade de receber novas ordens.
+2. **`PIO_INST` (HPS $\rightarrow$ FPGA)**: Barramento de 32 bits no qual o HPS escreve a palavra da instrução montada.
+3. **`PIO_ATIVA` (HPS $\rightarrow$ FPGA)**: Após escrever a instrução, o HPS escreve `1` nesta porta para sinalizar a disponibilidade do dado. Na FPGA, esse sinal passa pelo módulo `rising_edge_detector.v`, gerando um pulso síncrono de exatamente um ciclo de *clock* (`ativa_pulse`), o que previne múltiplos disparos espúrios.
+4. **`PIO_VALID` (FPGA $\rightarrow$ HPS)**: Ao entrar no estado `DECODE`, a Unidade de Controle gera um pulso de validação (`valid_pulse`). Para evitar que o HPS perca esse pulso rápido de hardware (devido à latência de leitura do barramento pelo Linux), foi incorporado o módulo `pulse_latch.v`. Este circuito funciona como uma trava de bit (*sticky ACK*), mantendo a linha `valid` em nível alto até intervenção do HPS.
+5. **`PIO_CLEAR` (HPS $\rightarrow$ FPGA)**: Ao detectar `PIO_VALID == 1`, o HPS desativa `PIO_ATIVA` (escreve `0`) e pulsa a linha `PIO_CLEAR` (escreve `1`), acionando o reset da trava do `pulse_latch.v`. O *driver* aguarda a confirmação de descida de `PIO_VALID == 0`, finaliza a limpeza de `PIO_CLEAR` e encerra a transação com segurança garantida.
+
+Esse fluxo estruturado elimina qualquer probabilidade de sobrescrita acidental de instruções no coprocessador e assegura que nenhuma instrução gráfica seja ignorada durante a execução da aplicação.
+
+---
+
+## Tempo de Propagação em Circuitos Digitais
+
+### Fundamentação Teórica
+Em circuitos lógicos digitais e semicondutores complementares (CMOS), os sinais não transitam instantaneamente entre os níveis lógicos $0$ e $1$. O **tempo de propagação** ($t_{pd}$ ou *propagation delay*) representa o intervalo de tempo decorrido entre a transição na entrada de uma porta lógica ou bloco funcional e a correspondente transição estável na sua saída (tipicamente medido no ponto de $50\%$ da excursão de tensão dos sinais).
+
+Esse atraso é consequência direta de fenômenos físicos intrínsecos aos transistores de efeito de campo e às linhas condutoras da matriz da FPGA:
+- **Resistência interna de canal** dos transistores durante a comutação;
+- **Capacitâncias parasitas** de porta, dreno e das trilhas metálicas de interconexão (*interconnect delay*);
+- **Topologia e profundidade lógica** da rede combinacional (número de portas em cascata até o destino).
+
+### Restrições Temporais em Circuitos Síncronos
+Em sistemas digitais síncronos regidos por relógio (*clock*), os tempos de propagação estabelecem o limite máximo para a frequência de operação ($f_{max} = 1 / T_{clk}$). Para que os dados sejam amostrados corretamente pelos registradores e *flip-flops* biestáveis, devem ser respeitadas duas condições essenciais:
+1. **Tempo de *Setup* ($t_{su}$)**: O sinal de dados na entrada do registrador deve permanecer estável antes da borda ativa do *clock* por um intervalo mínimo $t_{su}$.
+2. **Tempo de *Hold* ($t_{h}$)**: O sinal de dados deve continuar estável após a ocorrência da borda ativa do *clock* por um intervalo mínimo $t_{h}$.
+
+A equação que rege o caminho crítico combinacional mais longo ($t_{comb\_max}$) é dada por:
+
+$$T_{clk} \ge t_{co} + t_{comb\_max} + t_{su}$$
+
+onde $t_{co}$ (*clock-to-output*) é o atraso entre a borda do clock e a saída do registrador de origem. Caso o atraso de propagação combinacional ultrapasse esse limite, ocorre violação de tempo de *setup*, levando o registrador a um estado de **metaestabilidade** (onde o biestável oscila ou assume tensão intermediária indefinida por período imprevisível, corrompendo a lógica do sistema).
+
+### Relevância no Contexto do Projeto
+No coprocessador gráfico em FPGA, coexistem blocos combinacionais extensos — como a geração e multiplexação de coordenadas para polígonos, cálculo de *bounding box*, endereçamento de memória RAM de blocos de fundo (*background*) e casamento de pixels na controladora VGA. 
+
+O tempo de propagação impacta o projeto em dois eixos vitais:
+1. **Integridade de Barramento e Handshake**: Entre a escrita do valor de 32 bits em `PIO_INST` pelo HPS e o disparo de `PIO_ATIVA`, os caminhos de roteamento da FPGA impõem tempos de propagação distintos a cada uma das 32 linhas de dados. A separação estrita adotada pelo *driver* — garantindo que os dados cheguem aos pinos do registrador antes da amostragem pelo pulso de ativação — previne que a Unidade de Controle capture valores intermediários ou incompletos decorrentes de tempos de propagação desiguais nas trilhas (*skew*).
+2. **Pipelining e Estados da Unidade de Controle**: A transição escalonada em ciclos definidos (`FETCH` $\rightarrow$ `DECODE` $\rightarrow$ `SAVE`) garante que a decodificação de campos (bits de cor, tamanho, inversão de eixos e posições) esteja completamente estabilizada na lógica combinacional antes da ativação dos pulsos de escrita nos módulos de vídeo (`spr_salva_info`, `pol_salva_config`, etc.), garantindo margens de temporização (*slack*) seguras em toda a compilação do Quartus Prime.
+
+---
+
+## Funcionamento da Unidade de Controle em Processadores
+
+### Princípio de Operação da Unidade de Controle
+A **Unidade de Controle (UC)** é o elemento orquestrador de qualquer arquitetura de processamento digital. Enquanto o *Datapath* (caminho de dados) é responsável por armazenar valores e efetuar operações aritméticas e lógicas (através de registradores, ULA e memórias), a Unidade de Controle atua coordenando quando e como cada elemento do *datapath* deve agir.
+
+Em uma CPU tradicional, a Unidade de Controle é responsável por governar o **ciclo de instrução**, tradicionalmente subdividido em:
+- **Busca (*Fetch*)**: Obtenção da instrução na memória e armazenamento no Registrador de Instrução (IR);
+- **Decodificação (*Decode*)**: Interpretação do código de operação (*opcode*) e identificação dos operandos e modos de endereçamento;
+- **Execução (*Execute*)**: Habilitação dos sinais de controle adequados (seleção de funções na ULA, roteamento de multiplexadores, habilitação de leitura/escrita);
+- **Armazenamento (*Write-back*)**: Atualização do estado dos registradores de destino ou gravação na memória.
+
+### Modelos de Implementação: Cablada vs. Microprogramada
+As unidades de controle são classicamente projetadas sob duas abordagens arquiteturais:
+- **Unidade de Controle Cablada (*Hardwired Control Unit*)**: Implementada diretamente em lógica combinacional e sequencial com Máquinas de Estados Finitos (FSM). As transições e os sinais de controle são determinados por portas lógicas e registradores de estado. Caracteriza-se por baixíssima latência e máxima velocidade de processamento, sendo amplamente adotada em arquiteturas RISC e controladores dedicados em hardware/FPGA.
+- **Unidade de Controle Microprogramada (*Microprogrammed Control Unit*)**: As sequências de controle para cada instrução são armazenadas como pequenas rotinas ("microinstruções") em uma memória interna de controle (*control store* ROM). Embora facilite modificações e suporte instruções complexas (típicas de arquiteturas CISC), introduz maior latência de execução decorrente da leitura contínua da memória de controle.
+
+### A Unidade de Controle do Coprocessador Gráfico
+No coprocessador desenvolvido, a Unidade de Controle (`UnidadeDeControle.v`) foi concebida segundo a abordagem **cablada**, utilizando uma Máquina de Estados Finitos síncrona integrada ao relógio do sistema.
+
+A estrutura é organizada em torno de um Registrador de Instruções de 32 bits (`instrucao_reg`) e três estados fundamentais:
+```
+  +---------+    ativa == 1     +----------+                  +---------+
+  |  FETCH  | ----------------> |  DECODE  | ---------------> |  SAVE   |
+  |         | <---------------- |          |                  |         |
+  +---------+   (fim do ciclo)  +----------+                  +---------+
+     ready=1                       valid=1                    salva_* = 1
+```
+
+1. **Estado `FETCH` (2'b00)**: 
+   - A UC mantém todas as linhas de controle de gravação desativadas (`*_salva_* <= 0`), sinaliza `ready <= 1` e `valid <= 0`.
+   - Permanece em espera até que o sinal `ativa` (proveniente do detector de borda do handshake com o HPS) passe para nível alto.
+   - Ao receber o pulso, transfere a palavra do barramento de 32 bits para o registrador interno `instrucao_reg` e comuta para o estado `DECODE`.
+2. **Estado `DECODE` (2'b01)**:
+   - A UC desativa a sinalização de `ready <= 0` e aciona `valid <= 1`.
+   - Analisa o campo de *Opcode* formado pelos bits mais significativos (`instrucao_reg[31:29]`) e direciona os campos imediatos para os registradores de saída específicos de cada motor:
+     - `3'b001`: Comando de **Reset** geral dos registradores;
+     - `3'b010`: **Sprite Info** (extrai índice, ID do padrão e coordenadas X/Y);
+     - `3'b011`: **Sprite Config** (extrai visibilidade e espelhamento Flip X / Flip Y);
+     - `3'b100`: **Polygon Info** (extrai endereço do polígono, coordenada do vértice e posições X/Y);
+     - `3'b101`: **Polygon Config** (extrai formato trapézio/retângulo, visibilidade e cor);
+     - `3'b110`: **Background Info / Roll** (extrai coordenadas de *tile*, cor de fundo ou controle de rolagem);
+     - `3'b111`: **Toggle Layer** (seleciona a prioridade de sobreposição de camadas).
+   - Ao final do ciclo de *clock*, a máquina transita automaticamente para `SAVE`.
+3. **Estado `SAVE` (2'b10)**:
+   - Com todos os barramentos de dados já decodificados e propagados com estabilidade temporal, a UC asserta a linha de habilitação de escrita correspondente (`spr_salva_info`, `spr_salva_config`, `pol_salva_info`, `pol_salva_config`, `bg_salva_info` ou `geral_layer_save`).
+   - Os motores gráficos capturam os valores em seus próprios registradores internos.
+   - A máquina de estados retorna incondicionalmente para o estado `FETCH`, baixando os pulsos de escrita e reabilitando o sistema para a próxima instrução.
+
+Dessa forma, a Unidade de Controle atua como o elo integrador entre a ISA de 32 bits emitida pelo software e as ações físicas dos motores de desenho no hardware.
+
+---
 
 # Manual do Sistema
 
@@ -105,5 +220,23 @@ A opção 9 executa uma cena de demonstração completa (_sprite_, _background_,
 
 # Referências
 
-Manual da placa (DE1-SoC) e do dispositivo Cyclone V pode ser consultados na página de [Recursos do LTEC3 - LEDS] https://sites.google.com/uefs.br/ltec3-leds/recursos
+1. **Recursos de Hardware e Manuais da Placa (DE1-SoC / Cyclone V)**:
+   - Laboratório de Tecnologia da Computação (LTEC3 - LEDS / UEFS). *Recursos da Placa DE1-SoC e Cyclone V*. Disponível em: [https://sites.google.com/uefs.br/ltec3-leds/recursos](https://sites.google.com/uefs.br/ltec3-leds/recursos).
+   - Intel Corporation. *Cyclone V Device Handbook, Volume 3: Hard Processor System Technical Reference Manual*. Disponível em: [Intel FPGA Documentation](https://www.intel.com/content/www/us/en/docs/programmable/683126/current/cyclone-v-hard-processor-system-technical.html).
+   - Intel Corporation. *Embedded Design Handbook: HPS-FPGA Bridges*. Disponível em: [Intel HPS-FPGA Bridges Guide](https://www.intel.com/content/www/us/en/docs/programmable/683260/current/hps-fpga-bridges.html).
+
+2. **Protocolos de Handshake e Comunicação entre Domínios**:
+   - GeeksforGeeks. *Asynchronous Data Transfer – Handshaking*. Disponível em: [https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/](https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/).
+   - All About Circuits. *Understanding Handshaking in Digital Communications*. Disponível em: [https://www.allaboutcircuits.com/technical-articles/understanding-handshaking-in-digital-communications/](https://www.allaboutcircuits.com/technical-articles/understanding-handshaking-in-digital-communications/).
+
+3. **Tempo de Propagação, Atrasos e Análise Temporal em Circuitos Digitais**:
+   - All About Circuits. *Understanding Propagation Delay in Digital Circuits*. Disponível em: [https://www.allaboutcircuits.com/technical-articles/understanding-propagation-delay-in-digital-circuits/](https://www.allaboutcircuits.com/technical-articles/understanding-propagation-delay-in-digital-circuits/).
+   - WAKERLY, John F. *Digital Design: Principles and Practices*. 4th ed. Pearson Prentice Hall.
+   - Intel Corporation. *Understanding Metastability in FPGAs* (Application Note 42). Disponível em: [Intel FPGA Metastability Guide](https://www.intel.com/content/dam/www/programmable/us/en/pdfs/literature/an/an042.pdf).
+
+4. **Organização de Processadores e Unidade de Controle**:
+   - PATTERSON, David A.; HENNESSY, John L. *Computer Organization and Design: The Hardware/Software Interface*. 5th ed. Morgan Kaufmann / Elsevier.
+   - STALLINGS, William. *Computer Organization and Architecture: Designing for Performance*. 10th ed. Pearson Education.
+   - GeeksforGeeks. *Control Unit and its Types in Computer Architecture*. Disponível em: [https://www.geeksforgeeks.org/control-unit-and-its-types/](https://www.geeksforgeeks.org/control-unit-and-its-types/).
+
 
