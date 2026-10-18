@@ -131,6 +131,57 @@ A partir disso, o funcionamento do sistema passa a ser ditado pelo ciclo de busc
 
 A geração da imagem da saída VGA deve ser estável, a partir da resolução lógica 320X240, e operar de forma independente da execução de instruções pela Unidade de Controle, sendo necessária a inclusão de uma Unidade de Controle de Quadro, um Compositor, uma Controladora VGA.
 
+O seguinte projeto marca a segunda fase de um problema, que tem como propósito a construção de um coprocessador programável, controlado por instruções de 32 bits enviadas pelo HPS (Hard Processor System) através de uma ISA e uma Unidade de Controle, além do desenvolvimento de um driver e uma aplicação teste em C, deixando a base pronta para a integração com o jogo na fase final.
+
+## Arquitetura e Fluxo de Dados
+
+O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de barramentos de memória mapeada (MMIO), permitindo que comandos emitidos por aplicações em software sejam convertidos em primitivas gráficas aceleradas por hardware. O fluxo global de interconexão entre as camadas do sistema pode ser visualizado no diagrama a seguir:
+
+![Diagrama de Alto Nível do Sistema](Imagens/Diagrama_de_alto_nivel.svg)
+
+---
+
+## Estabilização Temporal e Ajuste de Clock no Motor de Polígonos
+
+Durante o desenvolvimento desta fase, o módulo responsável pela rasterização de formas geométricas (triângulos e quadriláteros/trapézios) apresentou o maior desafio de temporização de todo o coprocessador gráfico. Para solucionar problemas de oscilação visual e garantir fidelidade geométrica na saída de vídeo, foram implementadas alterações que aumentaram o tempo entre os ciclos de *clock* dedicados à varredura e ao cálculo do motor de polígonos.
+
+### A Complexidade dos Cálculos de Aresta
+Diferente de elementos como blocos de fundo (*background*) ou *sprites* — que realizam predominantemente leituras indexadas em tabelas de memória —, o motor de polígonos necessita avaliar matematicamente a inclusão geométrica de cada pixel da tela em tempo real durante a varredura.
+
+Para determinar se um pixel pertence ao interior da forma, o circuito executa o algoritmo do produto vetorial bidimensional para cada uma das arestas do polígono. Essa avaliação é estruturada em uma cascata estritamente combinacional:
+
+1. **Subtração de Coordenadas**: Cálculo das distâncias relativas entre o pixel atual e os vértices da forma geométrica;
+2. **Multiplicações Cruzadas com Sinal**: Multiplicação em ponto fixo dos vetores de deslocamento de cada aresta;
+3. **Cálculo do Determinante da Aresta**: Subtração entre os produtos cruzados para encontrar o sinal resultante;
+4. **Comparação de Fronteira**: Verificação lógica conjunta do sinal de todas as arestas simultaneamente;
+5. **Decisão e Seleção de Cor**: Multiplexação condicional da cor da forma ou transparência.
+
+Como essa cadeia de cálculos é realizada em paralelo para múltiplas arestas e múltiplos polígonos simultâneos, o sinal precisa atravessar uma sequência profunda de portas lógicas e blocos multiplicadores antes de gerar o pixel final:
+
+![Caminho Crítico Combinacional do Gerador de Polígonos](Imagens/calculo_aresta_poligono.svg)
+
+### O Problema do Ciclo de Clock Curto
+Quando o motor de polígonos operava diretamente sob a frequência mais alta do sistema, o intervalo de tempo entre duas bordas ativas de *clock* era extremamente estreito. 
+
+Como as operações de multiplicação e subtração encadeadas demandam um tempo físico considerável para que as correntes transitem pelos transistores e as capacitâncias das trilhas se carreguem, o tempo de propagação combinacional ultrapassava a duração do ciclo. 
+
+Dessa forma, a borda ativa do *clock* seguinte chegava antes que os resultados dos multiplicadores tivessem alcançado seus níveis de tensão finais estáveis. Essa violação do tempo de *setup* provocava a captura de dados em plena fase de transição (ruídos e valores espúrios), resultando em cintilações, falhas no preenchimento interno e deformações nos vértices dos polígonos exibidos na tela.
+
+### O Mecanismo de Estabilização por Aumento do Período de Clock
+Para sanar em definitivo essa limitação física, foi aplicada uma alteração arquitetural que estendeu o tempo entre os pulsos de relógio do motor de polígonos (reduzindo a frequência de varredura do módulo em quatro vezes em relação ao relógio base).
+
+Ao multiplicar o período do ciclo de *clock*, estabeleceu-se uma dinâmica temporal favorável:
+
+- **Acomodação Completa da Cadeia Matemática**: O tempo disponível entre pulsos passou a ser muito superior ao atraso máximo acumulado pelas subtrações, multiplicações e comparadores;
+- **Criação de Ampla Janela de Estabilidade**: As contas complexas completam sua propagação logo na primeira porção do ciclo estendido. O sinal resultante atinge seu valor definitivo e permanece em repouso elétrico por um longo intervalo antes da borda de amostragem;
+- **Eliminação de Violações e Glitches**: Com os tempos de *setup* e *hold* amplamente respeitados, o circuito de saída captura dados perfeitamente consistentes, eliminando a ocorrência de metaestabilidade e garantindo bordas nítidas e preenchimento sólido na imagem.
+
+O diagrama comparativo abaixo ilustra a diferença de comportamento entre o ciclo original insuficiente e o ciclo estendido:
+
+![Comparativo de Temporização e Estabilização de Clock](Imagens/estabilizacao_temporizacao_clock.svg)
+
+
+
 ## Arquitetura e Fluxo de Dados
 
 # Manual de Uso
