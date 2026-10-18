@@ -16,7 +16,7 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
   - [Tempo de Propagação em Circuitos Digitais](#tempo-de-propagação-em-circuitos-digitais)
   - [Funcionamento da Unidade de Controle em Processadores](#funcionamento-da-unidade-de-controle-em-processadores)
 - [Manual do Sistema](#manual-do-sistema)
-  - [Requisitos do sistema](#requisitos-do-sistema)
+  - [Requisitos do problema](#requisitos-do-problema)
   - [Arquitetura e Fluxo de Dados](#arquitetura-e-fluxo-de-dados)
     - [ISA](#isa)
   - [Teste Desenvolvido](#teste-desenvolvido)
