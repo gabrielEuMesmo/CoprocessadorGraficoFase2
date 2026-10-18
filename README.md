@@ -20,6 +20,8 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
   - [Arquitetura e Fluxo de Dados](#arquitetura-e-fluxo-de-dados)
     - [ISA](#isa)
     - [Interface HPS-CoProcessador](#interface-hps-coprocessador)
+    - [Driver Assembly](#driver-assembly)
+    - [Aplicação C](#aplicação-c)
   - [Teste Desenvolvido](#teste-desenvolvido)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
@@ -183,6 +185,15 @@ Na primeira fase. a verificação e envio é conduzida pelo Driver (através de 
 Na terceira fase, de desativação da requisição, o driver assume novamente o controle (via `wait_valid_1`) e, ao verificar a condição de `pio_valid` = 1, escreve `pio_clear` = 1 e reduz `pio_ativa` = 0. A quarta e última fase é operada de forma combinada pelo `pulse_latch` e pelo driver (`wait_valid_0`). Nesta etapa de encerramento do ciclo, o latch zera o sinal `pio_valid`, fazendo com que o driver aguarde a leitura de `pio_valid` = 0 para finalmente escrever `pio_clear` = 0.
 
 O protocolo de quatro fases pode ser representado através do diagrama a seguir: IMAGEM
+
+### Driver Assembly
+
+O driver do sistema foi desenvolvido na linguagem Assembly ARM e opera através da utilização direta de chamadas de sistema Linux, e a sua integração acontece a partir de código escrito em C. A estrutura do driver está dividida em funções com diferentes objetivos: a função `abrir_memoria` é responsável por invocar open("/dev/mem", O_RDWR | O_SYNC), seguida da execução de `mmap2` para mapear a janela de 2 MB pertencente à ponte lightweight no endereço `0xFF200000`. Em caso de sucesso, devolve o ponteiro virtual base e guarda globalmente as variáveis `g_fd` e `g_virtual_base`, ou devolve -1 caso ocorra um erro. 
+O fim deste acesso é feito pela função `fechar_memoria`, que executa as instruções `munmap` e `close`, e as variáveis globais são limpas. Já a função `enviar_instrucao` tem o papel de executar o handshake, descrito anteriormente neste documento, para a palavra de 32 bits recebida no registador `r0`. As restantes funções de envio (`enviar_reset`, `enviar_sprite_info`, `enviar_sprite_config`, `enviar_pol_info`, `enviar_pol_config`, `enviar_bg_info` e `enviar_toggle_layer`) são encarregadas de montar a palavra de instrução de 32 bits através do uso da instrução `bfi` (bit field insert), que insere cada campo na sua exata posição definida pela ISA. Com a montagem finalizada, estas funções chamam a `enviar_instrucao`, preservando o registador `lr` daquele que chamou a função.
+
+### Aplicação C
+
+A aplicação de teste, desenvolvida em linguagem C e criado para utilizar as funções do driver, disponibiliza um menu interativo que oferece uma opção dedicada para cada instrução disponível. Para garantir o envio correto dos dados, a aplicação possui uma validação da faixa de cada campo através da função `ler_campo` antes da submissão da instrução, suportando entradas tanto em formato decimal como hexadecimal. Com a finalidade de testar o sistema, foi incluída uma opção que permite a leitura direta dos periféricos de entrada/saída (PIOs) `ready` e `valid`. Por fim, o menu apresenta uma opção de sequência de teste completa, que serve como demonstração das funcionalidades do projeto.
 
 ## Teste desenvolvido
 
