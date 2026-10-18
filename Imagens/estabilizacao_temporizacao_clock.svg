@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <style>
+      .main-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 20px; font-weight: 700; fill: #0f172a; }
+      .section-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 700; }
+      .signal-name { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #334155; }
+      .timing-text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 11px; fill: #475569; }
+      .alert-bad { fill: #fef2f2; stroke: #f87171; stroke-width: 1.5; }
+      .alert-good { fill: #f0fdf4; stroke: #4ade80; stroke-width: 1.5; }
+    </style>
+    <filter id="shadow2" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Fundo geral -->
+  <rect width="960" height="540" fill="#f8fafc" rx="12" />
+  <rect x="16" y="16" width="928" height="508" fill="#ffffff" rx="8" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Cabeçalho -->
+  <text x="40" y="50" class="main-title">Efeito da Ampliação do Período de Clock na Estabilização de Sinais</text>
+  <text x="40" y="70" class="timing-text" font-size="13px">Comparativo de temporização entre ciclo curto (instável) e ciclo estendido com margem de segurança</text>
+
+  <!-- ================= CENÁRIO A: CICLO CURTO ================= -->
+  <g transform="translate(40, 95)">
+    <!-- Painel de fundo Cenário A -->
+    <rect width="880" height="180" rx="8" class="alert-bad" filter="url(#shadow2)" />
+    
+    <text x="20" y="26" class="section-title" fill="#b91c1c">Cenário A: Clock Original de Ciclo Curto (Período Insuficiente)</text>
+    
+    <!-- Sinal de Clock Original -->
+    <text x="20" y="65" class="signal-name">Clock</text>
+    <path d="M 120 70 L 170 70 L 170 45 L 220 45 L 220 70 L 270 70 L 270 45 L 320 45 L 320 70 L 370 70 L 370 45 L 420 45 L 420 70 L 470 70 L 470 45 L 520 45 L 520 70" 
+          stroke="#0284c7" stroke-width="2.5" fill="none" />
+    
+    <!-- Linhas de Borda de Amostragem -->
+    <line x1="220" y1="35" x2="220" y2="155" stroke="#94a3b8" stroke-dasharray="3 3" />
+    <line x1="320" y1="35" x2="320" y2="155" stroke="#ef4444" stroke-width="2" stroke-dasharray="3 3" />
+
+    <!-- Sinal Combinacional (Transitando) -->
+    <text x="20" y="125" class="signal-name">Cálculo Aresta</text>
+    
+    <!-- Onda estável no início -->
+    <path d="M 120 120 L 220 120" stroke="#059669" stroke-width="2" fill="none" />
+    <!-- Período de propagação / ruído combinacional -->
+    <rect x="220" y="105" width="130" height="30" fill="#fee2e2" stroke="#fca5a5" stroke-dasharray="2 2" rx="4" />
+    <path d="M 220 120 Q 235 105, 250 130 T 280 110 T 310 135 T 350 120" stroke="#dc2626" stroke-width="2" fill="none" />
+    <!-- Só estabiliza depois do clock bater -->
+    <path d="M 350 120 L 520 120" stroke="#059669" stroke-width="2" fill="none" />
+
+    <!-- Destaque de Violação -->
+    <rect x="540" y="45" width="315" height="110" rx="6" fill="#ffffff" stroke="#f87171" stroke-width="1.5" />
+    <text x="555" y="72" font-family="system-ui" font-size="13px" font-weight="700" fill="#dc2626">Violação de Tempo de Setup (t_su)</text>
+    <text x="555" y="94" class="timing-text">O tempo de cálculo do polígono ultrapassa o</text>
+    <text x="555" y="110" class="timing-text">período do relógio. A amostragem ocorre com</text>
+    <text x="555" y="126" class="timing-text">o dado em oscilação, gerando falhas e glitches.</text>
+    <text x="555" y="144" font-family="system-ui" font-size="11px" font-weight="700" fill="#b91c1c">Resultado: Polígonos corrompidos ou piscando.</text>
+  </g>
+
+  <!-- ================= CENÁRIO B: CICLO ESTENDIDO ================= -->
+  <g transform="translate(40, 295)">
+    <!-- Painel de fundo Cenário B -->
+    <rect width="880" height="205" rx="8" class="alert-good" filter="url(#shadow2)" />
+    
+    <text x="20" y="26" class="section-title" fill="#15803d">Cenário B: Clock com Divisão de Frequência (Ciclo Estendido de 4x)</text>
+    
+    <!-- Sinal de Clock Estendido -->
+    <text x="20" y="70" class="signal-name">Clock P/4</text>
+    <path d="M 120 75 L 220 75 L 220 45 L 420 45 L 420 75 L 620 75 L 620 45 L 820 45" 
+          stroke="#0284c7" stroke-width="2.5" fill="none" />
+    
+    <!-- Linhas de Borda de Amostragem -->
+    <line x1="220" y1="35" x2="220" y2="180" stroke="#94a3b8" stroke-dasharray="3 3" />
+    <line x1="620" y1="35" x2="620" y2="180" stroke="#16a34a" stroke-width="2" stroke-dasharray="3 3" />
+
+    <!-- Sinal Combinacional (Estabilizando com Folga) -->
+    <text x="20" y="135" class="signal-name">Cálculo Aresta</text>
+    
+    <!-- Início -->
+    <path d="M 120 130 L 220 130" stroke="#059669" stroke-width="2" fill="none" />
+    <!-- Período de propagação / ruído combinacional (mesma duração de antes) -->
+    <rect x="220" y="115" width="130" height="30" fill="#fef3c7" stroke="#fcd34d" stroke-dasharray="2 2" rx="4" />
+    <path d="M 220 130 Q 235 115, 250 140 T 280 120 T 310 145 T 350 130" stroke="#d97706" stroke-width="2" fill="none" />
+    
+    <!-- Sinal Estabilizado antes da borda -->
+    <path d="M 350 130 L 620 130" stroke="#16a34a" stroke-width="3" fill="none" />
+    
+    <!-- Área de Estabilidade (Slack) -->
+    <rect x="350" y="152" width="270" height="24" fill="#dcfce7" stroke="#86efac" rx="4" />
+    <text x="485" y="168" text-anchor="middle" font-family="system-ui" font-size="11px" font-weight="700" fill="#15803d">
+      Ampla Janela de Estabilidade (Slack Temporal Positivo)
+    </text>
+
+    <!-- Painel de Destaque Seguro -->
+    <rect x="645" y="45" width="215" height="140" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1.5" />
+    <text x="655" y="70" font-family="system-ui" font-size="13px" font-weight="700" fill="#166534">Amostragem Segura</text>
+    <text x="655" y="90" class="timing-text">O cálculo se encerra muito</text>
+    <text x="655" y="106" class="timing-text">antes da borda ativa do clock.</text>
+    <text x="655" y="126" class="timing-text">Tempo de setup e hold são</text>
+    <text x="655" y="142" class="timing-text">rigorosamente respeitados.</text>
+    <text x="655" y="166" font-family="system-ui" font-size="11px" font-weight="700" fill="#15803d">Resultado: Imagem nítida e 100% estável.</text>
+  </g>
+</svg>

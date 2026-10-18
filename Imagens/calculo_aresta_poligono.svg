@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 20px; font-weight: 700; fill: #1e293b; }
+      .subtitle { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 13px; fill: #64748b; }
+      .block-title { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 700; fill: #0f172a; }
+      .block-desc { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 11px; fill: #334155; }
+      .label-time { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 12px; font-weight: 600; fill: #b91c1c; }
+      .arrow { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#64748b" />
+    </marker>
+    <linearGradient id="timeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="50%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="480" fill="#f8fafc" rx="12" />
+  <rect x="16" y="16" width="928" height="448" fill="#ffffff" rx="8" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Header -->
+  <text x="40" y="52" class="title">Caminho Crítico Combinacional do Gerador de Polígonos</text>
+  <text x="40" y="74" class="subtitle">Cascata de operações aritméticas e lógicas executadas para testar a inclusão de cada pixel</text>
+
+  <!-- Estágio 0: Entradas -->
+  <g transform="translate(40, 110)">
+    <rect width="130" height="190" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow)" />
+    <rect width="130" height="34" rx="8" fill="#e2e8f0" />
+    <text x="65" y="22" text-anchor="middle" class="block-title">Coordenadas</text>
+    <text x="65" y="65" text-anchor="middle" class="block-desc">Pixel Atual</text>
+    <text x="65" y="85" text-anchor="middle" font-weight="700" fill="#2563eb" font-size="14px">(X, Y)</text>
+    <line x1="20" y1="105" x2="110" y2="105" stroke="#cbd5e1" stroke-dasharray="3 3" />
+    <text x="65" y="130" text-anchor="middle" class="block-desc">Vértices da Forma</text>
+    <text x="65" y="150" text-anchor="middle" font-weight="700" fill="#0284c7" font-size="13px">(X₀, Y₀) … (X₃, Y₃)</text>
+    <text x="65" y="180" text-anchor="middle" font-size="10px" fill="#64748b">Vértices Fixos</text>
+  </g>
+
+  <!-- Seta 1 -->
+  <path d="M 170 205 L 205 205" class="arrow" />
+
+  <!-- Estágio 1: Diferenças -->
+  <g transform="translate(210, 110)">
+    <rect width="140" height="190" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" filter="url(#shadow)" />
+    <rect width="140" height="34" rx="8" fill="#dbeafe" />
+    <text x="70" y="22" text-anchor="middle" class="block-title">1. Subtrações</text>
+    <text x="70" y="65" text-anchor="middle" class="block-desc">Diferenças de Posição:</text>
+    <text x="70" y="95" text-anchor="middle" font-weight="600" fill="#1e40af" font-size="12px">ΔX = (X₁ - X₀)</text>
+    <text x="70" y="120" text-anchor="middle" font-weight="600" fill="#1e40af" font-size="12px">ΔY = (Y - Y₀)</text>
+    <text x="70" y="150" text-anchor="middle" font-weight="600" fill="#1e40af" font-size="12px">ΔY' = (Y₁ - Y₀)</text>
+    <text x="70" y="175" text-anchor="middle" font-weight="600" fill="#1e40af" font-size="12px">ΔX' = (X - X₀)</text>
+  </g>
+
+  <!-- Seta 2 -->
+  <path d="M 350 205 L 385 205" class="arrow" />
+
+  <!-- Estágio 2: Multiplicações Cruzadas -->
+  <g transform="translate(390, 110)">
+    <rect width="165" height="190" rx="8" fill="#fefce8" stroke="#fef08a" stroke-width="1.5" filter="url(#shadow)" />
+    <rect width="165" height="34" rx="8" fill="#fef9c3" />
+    <text x="82" y="22" text-anchor="middle" class="block-title">2. Multiplicações</text>
+    <text x="82" y="65" text-anchor="middle" class="block-desc">Produtos Vetoriais 2D:</text>
+    <text x="82" y="95" text-anchor="middle" font-weight="600" fill="#854d0e" font-size="12px">Prod A = ΔX × ΔY</text>
+    <text x="82" y="125" text-anchor="middle" font-weight="600" fill="#854d0e" font-size="12px">Prod B = ΔY' × ΔX'</text>
+    <rect x="15" y="145" width="135" height="30" rx="4" fill="#fef08a" />
+    <text x="82" y="165" text-anchor="middle" font-weight="700" fill="#713f12" font-size="11px">Maior Atraso Lógico</text>
+  </g>
+
+  <!-- Seta 3 -->
+  <path d="M 555 205 L 585 205" class="arrow" />
+
+  <!-- Estágio 3: Equação da Aresta -->
+  <g transform="translate(590, 110)">
+    <rect width="150" height="190" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5" filter="url(#shadow)" />
+    <rect width="150" height="34" rx="8" fill="#ffedd5" />
+    <text x="75" y="22" text-anchor="middle" class="block-title">3. Determinantes</text>
+    <text x="75" y="65" text-anchor="middle" class="block-desc">Subtração Cruzada:</text>
+    <text x="75" y="100" text-anchor="middle" font-weight="700" fill="#9a3412" font-size="12px">E = Prod A - Prod B</text>
+    <text x="75" y="130" text-anchor="middle" class="block-desc">Cálculo paralelo para</text>
+    <text x="75" y="150" text-anchor="middle" class="block-desc">as 4 arestas:</text>
+    <text x="75" y="175" text-anchor="middle" font-weight="700" fill="#c2410c" font-size="12px">E₀, E₁, E₂, E₃</text>
+  </g>
+
+  <!-- Seta 4 -->
+  <path d="M 740 205 L 770 205" class="arrow" />
+
+  <!-- Estágio 4: Avaliação e Decisão de Pixel -->
+  <g transform="translate(775, 110)">
+    <rect width="145" height="190" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5" filter="url(#shadow)" />
+    <rect width="145" height="34" rx="8" fill="#dcfce7" />
+    <text x="72" y="22" text-anchor="middle" class="block-title">4. Decisão de Cor</text>
+    <text x="72" y="65" text-anchor="middle" class="block-desc">Teste de Sinais:</text>
+    <text x="72" y="90" text-anchor="middle" font-weight="600" fill="#166534" font-size="11px">(E₀ ≥ 0 &amp; E₁ ≥ 0 …)</text>
+    <text x="72" y="110" text-anchor="middle" class="block-desc">ou</text>
+    <text x="72" y="130" text-anchor="middle" font-weight="600" fill="#166534" font-size="11px">(E₀ ≤ 0 &amp; E₁ ≤ 0 …)</text>
+    <rect x="15" y="145" width="115" height="30" rx="4" fill="#22c55e" />
+    <text x="72" y="165" text-anchor="middle" font-weight="700" fill="#ffffff" font-size="12px">Pixel = Cor / 0x00</text>
+  </g>
+
+  <!-- Barra de Tempo de Propagação Acumulado -->
+  <g transform="translate(40, 340)">
+    <rect x="0" y="25" width="880" height="16" rx="8" fill="url(#timeGrad)" />
+    
+    <text x="0" y="15" font-family="system-ui" font-size="12px" font-weight="700" fill="#475569">Início do Ciclo (0 ns)</text>
+    <text x="880" y="15" text-anchor="end" class="label-time">Atraso Combinacional Máximo (Caminho Crítico)</text>
+    
+    <line x1="170" y1="20" x2="170" y2="45" stroke="#94a3b8" stroke-width="2" />
+    <line x1="350" y1="20" x2="350" y2="45" stroke="#94a3b8" stroke-width="2" />
+    <line x1="555" y1="20" x2="555" y2="45" stroke="#94a3b8" stroke-width="2" />
+    <line x1="740" y1="20" x2="740" y2="45" stroke="#94a3b8" stroke-width="2" />
+    <line x1="880" y1="20" x2="880" y2="45" stroke="#ef4444" stroke-width="3" />
+
+    <text x="440" y="65" text-anchor="middle" font-family="system-ui" font-size="12px" font-weight="600" fill="#475569">
+      Tempo de Propagação Acumulado (t_comb) através da rede de portas e multiplicadores
+    </text>
+  </g>
+</svg>
