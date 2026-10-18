@@ -325,6 +325,7 @@ A opção 9 executa uma cena de demonstração completa (_sprite_, _background_,
   - GeeksforGeeks. *Asynchronous Data Transfer – Handshaking*. Disponível em: [https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/](https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/).
   - GeeksforGeeks. *Control Unit and its Types in Computer Architecture*. Disponível em: [https://www.geeksforgeeks.org/control-unit-and-its-types/](https://www.geeksforgeeks.org/control-unit-and-its-types/).
   - Laboratório de Tecnologia da Computação (LTEC3 - LEDS / UEFS). *Recursos da Placa DE1-SoC e Cyclone V*. Disponível em: [https://sites.google.com/uefs.br/ltec3-leds/recursos](https://sites.google.com/uefs.br/ltec3-leds/recursos).
+  - Manual da placa (DE1-SoC) e do dispositivo Cyclone V pode ser consultados na página de [Recursos do LTEC3 - LEDS] https://sites.google.com/uefs.br/ltec3-leds/recursos
   - PATTERSON, David A.; HENNESSY, John L. *Computer Organization and Design: The Hardware/Software Interface*. 5th ed. Morgan Kaufmann / Elsevier.
   - STALLINGS, William. *Computer Organization and Architecture: Designing for Performance*. 10th ed. Pearson Education.
    - WAKERLY, John F. *Digital Design: Principles and Practices*. 4th ed. Pearson Prentice Hall.
