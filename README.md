@@ -1,5 +1,15 @@
 # CoProcessador Gráfico Programável
 
+O CoProcessador Gráfico Programável desenvolvido é inspirado na arquitetura de consoles de 16 bits e possui três motores gráficos que trabalham em conjunto:
+
+- Motor de background: tilemap de 40×30 posições com tiles de 8×8 pixels, com 256 padrões disponíveis, alteração individual de tiles e deslocamento vertical e horizontal (roll) da camada.
+- Motor de sprites: até 64 sprites de 16×16 pixels, com prioridade, definição de posição, espelhamento horizontal e vertical, visibilidade e transparência.
+- Rasterizador de polígonos: até 4 polígonos de 3 ou 4 vértices, com cor configurável.
+  
+A principal mudança do Problema 2 é que toda operação passa a ser consequência da execução de uma instrução da ISA definida pela equipe. Sendo assim, o controle dos motores, que antes era realizado pelo módulo `controlador_MEF` através da leitura das entradas `KEY` e `SW`, passou a ser feito por uma Unidade de Controle responsável por descodificar instruções de 32 bits. Além disso, a sincronização de comandos  deixou de ser através de um pulso de botão e passou a ser um protocolo de handshake utilizando os sinais `ativa`, `ready`, `valid` e `clear`. Já relacionado a software, que não existia na primeira fase, foi agora integrado um driver em Assembly ARM em conjunto com uma aplicação em C que possuide um menu. Por fim, como uma adição extra que não é parte dos requisitos do problema,  a ordem das camadas de polígonos e sprites, que anteriormente era fixa, passou a ser alternável. 
+
+O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, descrito na linguagem de descrição de hardware Verilog, através do ambiente de desenvolvimento Quartus Prime, com saída VGA 640×480 a 60 Hz, a partir de uma resolução lógica de 320×240.
+
 ## Sumário
 - [Fundamentação Teórica](#fundamentação-teórica)
   - [Protocolo de Handshake e Aplicação no Sistema](#protocolo-de-handshake-e-aplicação-no-sistema)
