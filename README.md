@@ -68,7 +68,7 @@ sudo ./aplicacao
 | 5 | Set pol config | camada [0-3], visivel [0-1], trapezio [0-1], cor [0-255]  |
 | 6 | Set background info | funcao [0-1], roll [0-3], x [0-63], y [0-31], cor [0-255]  |
 | 7 | Toggle layer | layer [0-1] |
-| 8 | Ler PIOs | nenhum (mostra `PIO_READY` e `PIO_VALID`) |
+| 8 | Ler PIOs | nenhum (mostra `PIO_READY` e `PIO_VALID`, usado para testes) |
 | 9 | Sequência de teste completa | nenhum |
 | 0 | Sair | nenhum |
 
