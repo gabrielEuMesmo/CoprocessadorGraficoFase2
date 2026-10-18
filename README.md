@@ -204,7 +204,7 @@ versão com erro:
 
 oam[spr_write_idx] <= {oam[spr_write_idx][31:9], spr_write_flip_x, spr_write_flip_y, spr_write_visivel, 5'd0};
 ```
-A concatenação tinha 23 + 3 + 5 = 31 bits, mas a variável `oam` tem 32 bits. Porém, o Verilog completa o bit mais significativo com zero e compila normalmente, e o efeito é que a palavra inteira era deslocada em um bit para baixo a cada escrita de config, “perdendo” o bit mais significativo de x. O resultado observado foi que _sprites_ apareciam na posição errada.
+A concatenação tinha 23 + 3 + 5 = 31 bits, mas `oam` tem 32 bits. Porém, o Verilog completa o bit mais significativo com zero e compila normalmente, e o efeito é que a palavra inteira era deslocada em um bit para baixo a cada escrita de config, “perdendo” o bit mais significativo de x. O resultado observado foi que _sprites_ apareciam na posição errada.
 
 # Manual de Uso
 
