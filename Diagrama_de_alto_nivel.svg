@@ -1,0 +1,521 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1971.3352833333336 3643.476000000001" width="1971.3352833333336" height="3643.476000000001" style="--bg:#1F1F1F;--fg:#CCCCCC;--line:#CCCCCC;--accent:#0078D4;--muted:#CCCCCCCC;--surface:#181818;--border:#CCCCCC;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="S_EXT" data-label="HPS &amp; Entradas da Placa (DE1-SoC)">
+  <rect x="1403.8442833333336" y="70" width="527.2929999999999" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="1403.8442833333336" y="70" width="527.2929999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1415.8442833333336" y="84" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">HPS &amp; Entradas da Placa (DE1-SoC)</text>
+</g>
+<g class="subgraph" data-id="S_CTRL" data-label="Controle &amp; Handshake (top_sistema)">
+  <rect x="685.7164000000002" y="312.1" width="407.01225" height="454.00000000000006" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="685.7164000000002" y="312.1" width="407.01225" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="697.7164000000002" y="326.1" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Controle &amp; Handshake (top_sistema)</text>
+</g>
+<g class="subgraph" data-id="MVT" data-label="motorVideoTop (Pipeline de Vídeo)">
+  <rect x="360.2319416666666" y="1008.8000000000002" width="1090.701525" height="1120.3000000000002" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="360.2319416666666" y="1008.8000000000002" width="1090.701525" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="372.2319416666666" y="1022.8000000000002" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">motorVideoTop (Pipeline de Vídeo)</text>
+<g class="subgraph" data-id="S_MEF" data-label="Orquestração de Camadas">
+  <rect x="539.37015" y="1605.1000000000004" width="391.8405499999999" height="454.00000000000006" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="539.37015" y="1605.1000000000004" width="391.8405499999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="551.37015" y="1619.1000000000004" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Orquestração de Camadas</text>
+</g>
+<g class="subgraph" data-id="S_ENGINES" data-label="Motores Gráficos">
+  <rect x="679.5764666666666" y="1094.8000000000002" width="686.608" height="367.70000000000005" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="679.5764666666666" y="1094.8000000000002" width="686.608" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="691.5764666666666" y="1108.8000000000002" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Motores Gráficos</text>
+</g>
+</g>
+<g class="subgraph" data-id="RESLOG" data-label="resolucao_logica (Double Buffer &amp; Upscale 320×240 → 640×480)">
+  <rect x="494.7170375" y="2446.600000000001" width="802.9014166666666" height="828.976" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="494.7170375" y="2446.600000000001" width="802.9014166666666" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="506.7170375" y="2460.600000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">resolucao_logica (Double Buffer &amp; Upscale 320×240 → 640×480)</text>
+</g>
+<g class="subgraph" data-id="S_VGA" data-label="Conector VGA da Placa">
+  <rect x="610.1735791666667" y="3489.676000000001" width="228.81899999999996" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="610.1735791666667" y="3489.676000000001" width="228.81899999999996" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="622.1735791666667" y="3503.676000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Conector VGA da Placa</text>
+</g>
+<polyline class="edge" data-from="ADDR_REG" data-to="RESLOG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="wraddress [17]" points="1189.8806916666665,2291.850000000001 1189.8806916666667,2368.600000000001 1144.9966208333333,2368.600000000001 1144.9966208333333,2446.600000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="HPS" data-to="UC" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="instrucao [32]" points="1828.2132833333335,172.025 1828.2132833333335,237.8 1801.2792833333335,237.8 1801.2792833333335,282.1 896.3266500000002,282.1 896.3266500000002,490.20000000000005 913.3567750000002,490.20000000000005 913.3567750000002,526.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="HPS" data-to="ED_ATIVA" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="ativa [1]" points="1871.6752833333335,172.025 1871.6752833333335,294.1 992.0276500000002,294.1 992.0276500000002,356.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="HPS" data-to="P_LATCH" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="clear [1]" points="1784.7512833333335,172.025 1784.7512833333335,225.8 1729.5832833333334,225.8 1729.5832833333334,270.1 738.4237333333335,270.1 738.4237333333335,696.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="HPS" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="ready [1]" points="838.7160250000002,580 838.7160250000002,592 821.8384000000002,592 821.8384000000003,898.5000000000001 185.5540000000001,898.5000000000001 185.5540000000001,52 1799.238616666667,52 1799.238616666667,118.225" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P_LATCH" data-to="HPS" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="valid / sticky_ack [1]" points="756.7774000000002,750.1000000000001 756.7774000000003,886.5000000000001 91,886.5000000000001 91,40 1857.1879500000002,40 1857.1879500000002,118.225" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PLL" data-to="UC" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="clock / 100MHz [1]" points="1529.0436833333335,172.025 1529.0436833333335,225.8 725.4237333333335,225.8 725.4237333333335,490.20000000000005 863.5962750000002,490.20000000000005 863.5962750000002,526.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="MEF" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="layer_order [1]" points="888.4765250000003,580 888.4765250000003,604 917.2344000000003,604 917.2344000000003,910.5000000000001 475.38727499999993,910.5000000000001 475.38727499999993,990.8000000000001 389.23194166666667,990.8000000000001 389.23194166666667,1563.1 734.77215,1563.1 734.7721499999998,1783.2000000000003 696.9489666666664,1783.2000000000003 696.9489666666664,1819.2000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="MVT" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="reset_inst [1]" points="913.3567750000002,580 913.3567750000002,592 930.2344000000003,592 930.2344000000003,922.5000000000001 710.375,922.5000000000001 710.375,990.8000000000001 747.4089416666666,990.8000000000001 747.4089416666666,1008.8000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="BG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="bg_Roll [2]
+bg_WRoll [1]
+bg_x_tile [6]
+bg_y_tile [5]
+bg_write [1]
+bg_color [8]" points="938.2370250000001,580 938.2370250000001,592 949.1745250000002,592 949.1745250000002,851.0000000000002 1028.7484666666667,851.0000000000002 1028.7484666666667,1162.8000000000002 1231.3218,1162.8000000000002 1231.3218,1174.8000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="POL" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="pol_Address [2]
+pol_cordenada [2]
+pol_x [9]
+pol_y [8]
+pol_cor [8]
+pol_visivel [1]
+pol_trapezio [1]
+pol_salva_info [1]
+pol_salva_config [1]" points="963.1172750000002,580 963.1172750000002,592 968.1146500000002,592 968.1146500000002,808.1000000000001 1123.8284666666668,808.1000000000001 1123.8284666666668,990.8000000000001 1038.7484666666667,990.8000000000001 1038.7484666666667,1150.8000000000002 836.1751333333333,1150.8000000000002 836.1751333333333,1174.8000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="SPR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="spr_write_idx [6]
+spr_write_x [9]
+spr_write_y [8]
+spr_write_id [6]
+spr_write_flip_x [1]
+spr_write_flip_y [1]
+spr_write_visivel [1]
+spr_write_en_info [1]
+spr_write_en_config [1]" points="987.9975250000002,580 987.9975250000002,796.1000000000001 1244.860466666667,796.1000000000001 1244.860466666667,990.8000000000001 1162.7034666666666,990.8000000000001 1162.7034666666666,1150.8000000000002 1074.0851333333333,1150.8000000000002 1074.0851333333333,1174.8000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MEF" data-to="BG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="enableBg [1]" points="308.4984916666666,864.2 308.4984916666665,1080.3000000000002 1042.3095249999997,1080.3000000000002 1042.3095249999997,68.00000000000011 930.5211916666665,68.00000000000011 930.5211916666666,166.00000000000006" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="BG" data-to="MEF" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="doneBg [1]" points="871.0898583333334,253.60000000000002 871.0898583333333,471.7000000000001 857.5175249999999,471.7000000000001 857.5175249999999,566.3000000000002 442.5365249999998,566.3000000000002 442.53652499999976,810.4000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MEF" data-to="POL" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="enablePol [1]" points="350.8262916666666,864.2 350.8262916666666,876.2 346.91285833333325,876.2 346.91285833333313,1068.3000000000002 169.13820833333318,1068.3000000000002 169.13820833333318,566.3000000000002 181.77999999999986,566.3000000000002 181.77999999999986,68.00000000000011 405.6438583333333,68.00000000000011 405.64385833333324,166.00000000000006" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="POL" data-to="MEF" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="donePol [1]" points="405.64385833333347,253.60000000000002 405.6438583333333,471.7000000000001 390.5675249999998,471.7000000000001 390.56752499999976,786.4000000000003 371.9901916666664,786.4000000000003 371.9901916666664,810.4000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ED_SPR" data-to="SPR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="spr_start_pulse [1]" points="470.27775833333317,1034.3000000000002 470.27775833333317,1092.3000000000002 75.35820833333321,1092.3000000000002 75.35820833333321,566.3000000000002 87.99999999999989,566.3000000000002 87.99999999999989,56.000000000000114 549.9955249999999,56.000000000000114 549.9955249999999,154.00000000000006 644.0478583333332,154.00000000000006 644.0478583333332,166.00000000000006" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SPR" data-to="MEF" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="doneSprt [1]" points="626.596525,253.60000000000002 626.5965249999999,471.7000000000001 606.6715249999999,471.7000000000001 606.6715249999999,554.3000000000002 414.7041083333332,554.3000000000002 414.7041083333331,774.4000000000003 407.26335833333303,774.4000000000003 407.26335833333303,810.4000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="BG" data-to="MUX_VID" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="bg_pixel [8]
+bg_address [16:0]" points="930.5211916666667,253.60000000000002 930.5211916666665,471.7000000000001 944.0935249999999,471.7000000000001 944.0935249999999,578.3000000000002 744.2620249999998,578.3000000000002 1059.1074666666666,1775.3837500000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="POL" data-to="MUX_VID" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="pol_pixel_reg [8]
+pol_address_reg [16:0]" points="475.94319166666673,253.60000000000002 475.9431916666666,471.7000000000001 491.01952499999993,471.7000000000001 491.01952499999993,578.3000000000002 653.4890249999999,578.3000000000002 1059.1074666666666,1775.3837500000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SPR" data-to="MUX_VID" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="spr_pixel [8]
+spr_address [16:0]" points="678.9505250000001,253.60000000000002 678.9505249999999,471.7000000000001 698.8755249999998,471.7000000000001 1059.1074666666666,1775.3837500000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MEF" data-to="LEDR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="LEDIDLE [1]" points="753.3860333333332,1873.0000000000005 753.3860333333332,1885.0000000000005 734.8086999999999,1885.0000000000005 734.8087000000002,2275.4000000000005 697.7747583333336,2275.4000000000005 697.7747583333335,2355.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MUX_VID" data-to="RESLOG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="w_pixel [8]" points="1028.8498,1926.6720833333338 1028.8498,2328.0000000000005 963.9686916666667,2328.0000000000005 963.9686916666667,2392.600000000001 1029.2561208333334,2392.600000000001 1029.2561208333334,2446.600000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MUX_VID" data-to="RESLOG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="w_wren [1]" points="998.5921333333333,1896.414416666667 998.5921333333333,2316.0000000000005 857.1413041666667,2316.0000000000005 857.1413041666667,2404.600000000001 1019.2561208333334,2404.600000000001 1019.2561208333334,2446.600000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MUX_VID" data-to="ADDR_REG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="w_address [17]" points="1089.3651333333332,1926.6720833333338 1089.3651333333332,2171.1000000000004 1189.8806916666667,2171.1000000000004 1189.8806916666665,2254.9500000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PLL" data-to="CLK25" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="clock [1]" points="1456.2440833333337,172.025 1456.2440833333335,201.8 219.31400000000008,201.8 219.31400000000008,2428.600000000001 586.1555375,2428.600000000001 586.1555375,2943.788000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PLL" data-to="RAM1" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="clock [1]" points="1492.6438833333336,172.025 1492.6438833333336,213.8 277.1980000000001,213.8 277.1980000000001,2416.600000000001 1008.9660375000001,2416.600000000001 1008.9660375000001,2624.7000000000007 947.8167874999999,2624.7000000000007 947.8167874999999,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PLL" data-to="RAM2" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="clock [1]" points="1565.4434833333337,172.025 1565.4434833333335,258.1 1616.0046916666668,258.1 1616.0046916666668,2428.600000000001 1265.8283708333333,2428.600000000001 1265.8283708333333,2624.7000000000007 1251.0382875,2624.7000000000007 1251.0382875,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ADDR_REG" data-to="RAM1" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="wraddress [17]" points="1150.6794416666667,2291.850000000001 1150.6794416666667,2324.3000000000006 1099.9206916666667,2324.3000000000006 1099.9206916666667,2428.600000000001 1069.8362875,2428.600000000001 1069.8362875,2648.7000000000007 1008.9771208333334,2648.7000000000007 1008.9771208333334,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ADDR_REG" data-to="RAM2" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="wraddress [17]" points="1229.0819416666666,2291.850000000001 1229.0819416666666,2324.3000000000006 1279.8406916666668,2324.3000000000006 1279.8406916666668,2380.600000000001 1154.9966208333333,2380.600000000001 1154.9966208333333,2672.7000000000007 1159.2977875,2672.7000000000007 1159.2977875,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MUX_VID" data-to="RAM1" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="data = w_pixel [8]" points="1059.1074666666666,1956.9297500000005 1059.1074666666666,2328.0000000000005 1049.9206916666667,2328.0000000000005 1049.9206916666667,2428.600000000001 1039.2561208333334,2428.600000000001 1039.2561208333334,2636.7000000000007 978.3969541666667,2636.7000000000007 978.3969541666667,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MUX_VID" data-to="RAM2" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="data = w_pixel [8]" points="1119.6227999999999,1896.4144166666672 1119.6227999999999,2159.1000000000004 1561.8526916666667,2159.1000000000004 1561.8526916666667,2416.600000000001 1244.0382875,2416.600000000001 1244.0382875,2636.7000000000007 1220.4581208333334,2636.7000000000007 1220.4581208333334,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_DRV" data-to="CALC_ADDR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="next_x [10]
+next_y [10]" points="763.3939125,3259.576000000001 763.3939124999999,3403.3760000000007 1590.4417333333333,3403.3760000000007 1590.4417333333333,3403.3760000000007 1523.0886916666668,3403.3760000000007 1523.0886916666668,2358.000000000001 1499.2429416666666,2358.000000000001 1499.2429416666666,2308.750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CALC_ADDR" data-to="RAM1" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="readVGA [17]" points="1395.6464416666668,2308.750000000001 1395.6464416666668,2348.3000000000006 1365.8006916666668,2348.3000000000006 1365.8006916666668,2392.600000000001 1167.9966208333333,2392.600000000001 1167.9966208333333,2660.7000000000007 1039.5572875,2660.7000000000007 1039.5572875,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CALC_ADDR" data-to="RAM2" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="readVGA [17]" points="1447.4446916666666,2308.750000000001 1447.4446916666666,2404.600000000001 1222.2482041666667,2404.600000000001 1222.2482041666667,2624.7000000000007 1189.8779541666668,2624.7000000000007 1189.8779541666668,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_DRV" data-to="VGA_OUT" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="red [8]
+green [8]
+blue [8]
+hsync [1]
+sync [1]
+blank [1]
+clk [1]" points="691.7799125,3259.576000000001 691.7799125000001,3533.676000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_DRV" data-to="VGA_OUT" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="vsync [1]" points="727.5869125,3259.576000000001 727.5869124999999,3403.3760000000007 755.9950791666666,3403.3760000000007 755.9950791666666,3471.676000000001 757.3862458333333,3471.676000000001 757.3862458333334,3533.676000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_DRV" data-to="ED_VSYNC" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="vsync [1]" points="655.9729125,3259.576000000001 655.9729125,3471.676000000001 313.19800000000004,3471.676000000001 313.19800000000004,990.8000000000002 376.2319416666666,990.8000000000002 376.23194166666667,1587.1000000000004 640.07115,1587.1000000000004 640.0711499999999,1649.1000000000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ED_ATIVA" data-to="UC" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="ativa_pulse [1]" points="992.0276500000002,409.90000000000003 992.0276500000002,490.20000000000005 963.1172750000003,490.20000000000005 963.1172750000003,526.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC" data-to="P_LATCH" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="valid_pulse [1]" points="863.5962750000003,580 863.5962750000003,592 870.3384000000003,592 870.3384000000003,660.3000000000001 775.1310666666669,660.3000000000001 775.1310666666669,696.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MEF" data-to="ED_SPR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="enableSprt [1]" points="795.7138333333332,1873.0000000000005 795.7138333333332,1885.0000000000005 830.5096999999998,1885.0000000000005 830.5096999999998,1989.3000000000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ED_VSYNC" data-to="MEF" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="vsyncPulse [1]" points="640.07115,1702.9000000000003 640.07115,1783.2000000000003 661.6758,1783.2000000000003 661.6758,1819.2000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SPR" data-to="SP_ROM" data-style="solid" data-arrow-start="true" data-arrow-end="true" data-label="rom_addr [14] / rom_data [8]" points="1091.5364666666665,1262.4 1091.5364666666665,1274.4 1128.5849666666666,1274.4 1128.5849666666666,1378.7000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)" />
+<polyline class="edge" data-from="VGA_FLIP" data-to="RAM1" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="wren1 = (!VGA) ? wren : 0 [1]" points="823.9300375,2544.400000000001 823.9300375,2556.400000000001 790.8140375,2556.400000000001 790.8140375,2624.7000000000007 917.2366208333333,2624.7000000000007 917.2366208333333,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_FLIP" data-to="RAM2" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="wren2 = (VGA) ? wren : 0 [1]" points="869.3700374999999,2544.400000000001 869.3700374999999,2556.400000000001 933.5460375,2556.400000000001 933.5460375,2672.7000000000007 1128.7176208333333,2672.7000000000007 1128.7176208333333,2684.7000000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="RAM1" data-to="MUX_COR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="color_in1 [8]" points="978.3969541666665,2752.500000000001 978.3969541666665,2832.800000000001 1039.2561208333334,2832.800000000001 1039.2561208333334,2868.800000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="RAM2" data-to="MUX_COR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="color_in2 [8]" points="1189.8779541666665,2752.500000000001 1189.8779541666665,2832.800000000001 1090.2001208333334,2832.800000000001 1090.2001208333334,2919.744000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_FLIP" data-to="MUX_COR" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="VGA sel [1]" points="778.4900375,2544.400000000001 778.4900375,2568.400000000001 714.3140375,2568.400000000001 714.3140375,2844.800000000001 988.3121208333334,2844.800000000001 988.3121208333334,2919.7440000000006" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MUX_COR" data-to="VGA_DRV" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="color_in [8]" points="1039.2561208333334,3072.576000000001 1039.2561208333334,3152.8760000000007 754.4421625,3152.8760000000007 754.4421625,3188.8760000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CLK25" data-to="VGA_DRV" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="clock_25 [1]" points="586.1555375,2997.5880000000006 586.1555375,3164.8760000000007 664.9246625000001,3164.8760000000007 664.9246625000001,3188.8760000000007" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VGA_DRV" data-to="VGA_FLIP" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="vsync [1]" points="709.6834125,3188.8760000000007 709.6834125,3152.8760000000007 671.5940375,3152.8760000000007 671.5940375,2556.400000000001 733.0500374999999,2556.400000000001 733.0500374999999,2544.400000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="ADDR_REG" data-to="RESLOG" data-label="wraddress [17]">
+  <rect x="1146.8806916666667" y="2331.3000000000006" width="85.96000000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1189.8606916666668" y="2346.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">wraddress [17]</text>
+</g>
+<g class="edge-label" data-from="HPS" data-to="UC" data-label="instrucao [32]">
+  <rect x="1759.7792833333335" y="244.79999999999998" width="82.396" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1800.9772833333336" y="259.95" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">instrucao [32]</text>
+</g>
+<g class="edge-label" data-from="HPS" data-to="ED_ATIVA" data-label="ativa [1]">
+  <rect x="1846.1752833333335" y="256.8" width="50.32" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1871.3352833333336" y="271.95" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">ativa [1]</text>
+</g>
+<g class="edge-label" data-from="HPS" data-to="P_LATCH" data-label="clear [1]">
+  <rect x="1703.0832833333334" y="232.8" width="52.696000000000005" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1729.4312833333333" y="247.95000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">clear [1]</text>
+</g>
+<g class="edge-label" data-from="UC" data-to="HPS" data-label="ready [1]">
+  <rect x="157.05399999999997" y="849.2000000000003" width="56.26" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="185.18399999999997" y="864.3500000000003" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">ready [1]</text>
+</g>
+<g class="edge-label" data-from="P_LATCH" data-to="HPS" data-label="valid / sticky_ack [1]">
+  <rect x="36.00000000000001" y="849.2000000000003" width="109.12600000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="90.56300000000002" y="864.3500000000003" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">valid / sticky_ack [1]</text>
+</g>
+<g class="edge-label" data-from="PLL" data-to="UC" data-label="clock / 100MHz [1]">
+  <rect x="676.9237333333335" y="232.8" width="96.65200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="725.2497333333336" y="247.95000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">clock / 100MHz [1]</text>
+</g>
+<g class="edge-label" data-from="UC" data-to="MEF" data-label="layer_order [1]">
+  <rect x="432.3872749999998" y="929.5000000000001" width="85.96000000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="475.36727499999984" y="944.6500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">layer_order [1]</text>
+</g>
+<g class="edge-label" data-from="UC" data-to="MVT" data-label="reset_inst [1]">
+  <rect x="672.375" y="929.5000000000001" width="75.26800000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="710.009" y="944.6500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">reset_inst [1]</text>
+</g>
+<g class="edge-label" data-from="UC" data-to="BG" data-label="bg_Roll [2]
+bg_WRoll [1]
+bg_x_tile [6]
+bg_y_tile [5]
+bg_write [1]
+bg_color [8]">
+  <rect x="991.2484666666667" y="858.0000000000002" width="74.08000000000001" height="101.80000000000001" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1028.2884666666666" y="908.9000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="1028.2884666666666" dy="-31.9">bg_Roll [2]</tspan><tspan x="1028.2884666666666" dy="14.3">bg_WRoll [1]</tspan><tspan x="1028.2884666666666" dy="14.3">bg_x_tile [6]</tspan><tspan x="1028.2884666666666" dy="14.3">bg_y_tile [5]</tspan><tspan x="1028.2884666666666" dy="14.3">bg_write [1]</tspan><tspan x="1028.2884666666666" dy="14.3">bg_color [8]</tspan></text>
+</g>
+<g class="edge-label" data-from="UC" data-to="POL" data-label="pol_Address [2]
+pol_cordenada [2]
+pol_x [9]
+pol_y [8]
+pol_cor [8]
+pol_visivel [1]
+pol_trapezio [1]
+pol_salva_info [1]
+pol_salva_config [1]">
+  <rect x="1069.3284666666668" y="815.1000000000001" width="108.53200000000004" height="144.70000000000002" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1123.594466666667" y="887.4500000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="1123.594466666667" dy="-53.35">pol_Address [2]</tspan><tspan x="1123.594466666667" dy="14.3">pol_cordenada [2]</tspan><tspan x="1123.594466666667" dy="14.3">pol_x [9]</tspan><tspan x="1123.594466666667" dy="14.3">pol_y [8]</tspan><tspan x="1123.594466666667" dy="14.3">pol_cor [8]</tspan><tspan x="1123.594466666667" dy="14.3">pol_visivel [1]</tspan><tspan x="1123.594466666667" dy="14.3">pol_trapezio [1]</tspan><tspan x="1123.594466666667" dy="14.3">pol_salva_info [1]</tspan><tspan x="1123.594466666667" dy="14.3">pol_salva_config [1]</tspan></text>
+</g>
+<g class="edge-label" data-from="UC" data-to="SPR" data-label="spr_write_idx [6]
+spr_write_x [9]
+spr_write_y [8]
+spr_write_id [6]
+spr_write_flip_x [1]
+spr_write_flip_y [1]
+spr_write_visivel [1]
+spr_write_en_info [1]
+spr_write_en_config [1]">
+  <rect x="1181.860466666667" y="815.1000000000001" width="125.16400000000003" height="144.70000000000002" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1244.442466666667" y="887.4500000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="1244.442466666667" dy="-53.35">spr_write_idx [6]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_x [9]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_y [8]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_id [6]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_flip_x [1]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_flip_y [1]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_visivel [1]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_en_info [1]</tspan><tspan x="1244.442466666667" dy="14.3">spr_write_en_config [1]</tspan></text>
+</g>
+<g class="edge-label" data-from="MEF" data-to="BG" data-label="enableBg [1]">
+  <rect x="1005.8095249999998" y="509.8499999999999" width="72.89200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1042.2555249999998" y="524.9999999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">enableBg [1]</text>
+</g>
+<g class="edge-label" data-from="BG" data-to="MEF" data-label="doneBg [1]">
+  <rect x="825.0175250000001" y="509.8499999999999" width="64.57600000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="857.3055250000001" y="524.9999999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">doneBg [1]</text>
+</g>
+<g class="edge-label" data-from="MEF" data-to="POL" data-label="enablePol [1]">
+  <rect x="143.77999999999992" y="509.8499999999999" width="75.26800000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="181.41399999999993" y="524.9999999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">enablePol [1]</text>
+</g>
+<g class="edge-label" data-from="POL" data-to="MEF" data-label="donePol [1]">
+  <rect x="357.0675249999999" y="509.8499999999999" width="66.952" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="390.5435249999999" y="524.9999999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">donePol [1]</text>
+</g>
+<g class="edge-label" data-from="ED_SPR" data-to="SPR" data-label="spr_start_pulse [1]">
+  <rect x="35.99999999999994" y="509.8499999999999" width="103.78000000000003" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="87.88999999999996" y="524.9999999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">spr_start_pulse [1]</text>
+</g>
+<g class="edge-label" data-from="SPR" data-to="MEF" data-label="doneSprt [1]">
+  <rect x="570.6715250000002" y="509.8499999999999" width="71.70400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="606.5235250000002" y="524.9999999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">doneSprt [1]</text>
+</g>
+<g class="edge-label" data-from="BG" data-to="MUX_VID" data-label="bg_pixel [8]
+bg_address [16:0]">
+  <rect x="893.5935250000001" y="502.7000000000001" width="100.21600000000004" height="44.6" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="943.7015250000002" y="525.0000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="943.7015250000002" dy="-3.3000000000000007">bg_pixel [8]</tspan><tspan x="943.7015250000002" dy="14.3">bg_address [16:0]</tspan></text>
+</g>
+<g class="edge-label" data-from="POL" data-to="MUX_VID" data-label="pol_pixel_reg [8]
+pol_address_reg [16:0]">
+  <rect x="428.0195250000001" y="502.7000000000001" width="125.16400000000003" height="44.6" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="490.6015250000001" y="525.0000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="490.6015250000001" dy="-3.3000000000000007">pol_pixel_reg [8]</tspan><tspan x="490.6015250000001" dy="14.3">pol_address_reg [16:0]</tspan></text>
+</g>
+<g class="edge-label" data-from="SPR" data-to="MUX_VID" data-label="spr_pixel [8]
+spr_address [16:0]">
+  <rect x="646.3755249999999" y="502.7000000000001" width="104.96800000000002" height="44.6" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="698.859525" y="525.0000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="698.859525" dy="-3.3000000000000007">spr_pixel [8]</tspan><tspan x="698.859525" dy="14.3">spr_address [16:0]</tspan></text>
+</g>
+<g class="edge-label" data-from="MEF" data-to="LEDR" data-label="LEDIDLE [1]">
+  <rect x="661.2747583333337" y="2282.4000000000005" width="72.892" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="697.7207583333337" y="2297.5500000000006" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">LEDIDLE [1]</text>
+</g>
+<g class="edge-label" data-from="MUX_VID" data-to="RESLOG" data-label="w_pixel [8]">
+  <rect x="930.4686916666667" y="2355.3000000000006" width="66.952" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="963.9446916666667" y="2370.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">w_pixel [8]</text>
+</g>
+<g class="edge-label" data-from="MUX_VID" data-to="RESLOG" data-label="w_wren [1]">
+  <rect x="824.6413041666667" y="2367.3000000000006" width="64.57600000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="856.9293041666667" y="2382.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">w_wren [1]</text>
+</g>
+<g class="edge-label" data-from="MUX_VID" data-to="ADDR_REG" data-label="w_address [17]">
+  <rect x="1145.8806916666667" y="2178.1000000000004" width="87.14800000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1189.4546916666668" y="2193.2500000000005" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">w_address [17]</text>
+</g>
+<g class="edge-label" data-from="PLL" data-to="CLK25" data-label="clock [1]">
+  <rect x="192.31400000000008" y="2391.3000000000006" width="53.88400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="219.25600000000009" y="2406.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">clock [1]</text>
+</g>
+<g class="edge-label" data-from="PLL" data-to="RAM1" data-label="clock [1]">
+  <rect x="250.1980000000001" y="2347.0000000000005" width="53.88400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="277.1400000000001" y="2362.1500000000005" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">clock [1]</text>
+</g>
+<g class="edge-label" data-from="PLL" data-to="RAM2" data-label="clock [1]">
+  <rect x="1589.0046916666668" y="2152.9" width="53.88400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1615.9466916666668" y="2168.05" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">clock [1]</text>
+</g>
+<g class="edge-label" data-from="ADDR_REG" data-to="RAM1" data-label="wraddress [17]">
+  <rect x="1056.9206916666667" y="2367.3000000000006" width="85.96000000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1099.9006916666667" y="2382.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">wraddress [17]</text>
+</g>
+<g class="edge-label" data-from="ADDR_REG" data-to="RAM2" data-label="wraddress [17]">
+  <rect x="1236.8406916666668" y="2343.3000000000006" width="85.96000000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1279.8206916666668" y="2358.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">wraddress [17]</text>
+</g>
+<g class="edge-label" data-from="MUX_VID" data-to="RAM1" data-label="data = w_pixel [8]">
+  <rect x="1001.4206916666667" y="2335.0000000000005" width="96.65200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1049.7466916666667" y="2350.1500000000005" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">data = w_pixel [8]</text>
+</g>
+<g class="edge-label" data-from="MUX_VID" data-to="RAM2" data-label="data = w_pixel [8]">
+  <rect x="1513.3526916666667" y="2185.2000000000003" width="96.65200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1561.6786916666667" y="2200.3500000000004" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">data = w_pixel [8]</text>
+</g>
+<g class="edge-label" data-from="VGA_DRV" data-to="CALC_ADDR" data-label="next_x [10]
+next_y [10]">
+  <rect x="1490.0886916666668" y="2365.000000000001" width="65.76400000000001" height="44.6" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1522.9706916666669" y="2387.300000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="1522.9706916666669" dy="-3.3000000000000007">next_x [10]</tspan><tspan x="1522.9706916666669" dy="14.3">next_y [10]</tspan></text>
+</g>
+<g class="edge-label" data-from="CALC_ADDR" data-to="RAM1" data-label="readVGA [17]">
+  <rect x="1326.8006916666668" y="2355.3000000000006" width="77.644" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1365.622691666667" y="2370.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">readVGA [17]</text>
+</g>
+<g class="edge-label" data-from="CALC_ADDR" data-to="RAM2" data-label="readVGA [17]">
+  <rect x="1408.4446916666666" y="2367.3000000000006" width="77.644" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1447.2666916666667" y="2382.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">readVGA [17]</text>
+</g>
+<g class="edge-label" data-from="VGA_DRV" data-to="VGA_OUT" data-label="red [8]
+green [8]
+blue [8]
+hsync [1]
+sync [1]
+blank [1]
+clk [1]">
+  <rect x="661.7799124999999" y="3324.576000000001" width="59.824" height="116.10000000000001" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="691.6919125" y="3382.626000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="691.6919125" dy="-39.050000000000004">red [8]</tspan><tspan x="691.6919125" dy="14.3">green [8]</tspan><tspan x="691.6919125" dy="14.3">blue [8]</tspan><tspan x="691.6919125" dy="14.3">hsync [1]</tspan><tspan x="691.6919125" dy="14.3">sync [1]</tspan><tspan x="691.6919125" dy="14.3">blank [1]</tspan><tspan x="691.6919125" dy="14.3">clk [1]</tspan></text>
+</g>
+<g class="edge-label" data-from="VGA_DRV" data-to="VGA_OUT" data-label="vsync [1]">
+  <rect x="726.9950791666668" y="3410.3760000000007" width="57.448" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="755.7190791666668" y="3425.5260000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">vsync [1]</text>
+</g>
+<g class="edge-label" data-from="VGA_DRV" data-to="ED_VSYNC" data-label="vsync [1]">
+  <rect x="284.1980000000001" y="2379.3000000000006" width="57.448" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="312.9220000000001" y="2394.4500000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">vsync [1]</text>
+</g>
+<g class="edge-label" data-from="ED_ATIVA" data-to="UC" data-label="ativa_pulse [1]">
+  <rect x="950.5276500000002" y="452.9000000000001" width="82.39600000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="991.7256500000002" y="468.05000000000007" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">ativa_pulse [1]</text>
+</g>
+<g class="edge-label" data-from="UC" data-to="P_LATCH" data-label="valid_pulse [1]">
+  <rect x="828.8384000000003" y="623.0000000000001" width="82.39600000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="870.0364000000003" y="638.1500000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">valid_pulse [1]</text>
+</g>
+<g class="edge-label" data-from="MEF" data-to="ED_SPR" data-label="enableSprt [1]">
+  <rect x="790.0096999999998" y="1916.0000000000002" width="80.02000000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="830.0196999999998" y="1931.1500000000003" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">enableSprt [1]</text>
+</g>
+<g class="edge-label" data-from="ED_VSYNC" data-to="MEF" data-label="vsyncPulse [1]">
+  <rect x="597.57115" y="1745.9000000000003" width="84.77200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="639.95715" y="1761.0500000000004" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">vsyncPulse [1]</text>
+</g>
+<g class="edge-label" data-from="SPR" data-to="SP_ROM" data-label="rom_addr [14] / rom_data [8]">
+  <rect x="1056.0849666666666" y="1305.4" width="144.17200000000003" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1128.1709666666666" y="1320.5500000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">rom_addr [14] / rom_data [8]</text>
+</g>
+<g class="edge-label" data-from="VGA_FLIP" data-to="RAM1" data-label="wren1 = (!VGA) ? wren : 0 [1]">
+  <rect x="721.3140375" y="2587.4000000000005" width="138.23200000000003" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="790.4300375" y="2602.5500000000006" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">wren1 = (!VGA) ? wren : 0 [1]</text>
+</g>
+<g class="edge-label" data-from="VGA_FLIP" data-to="RAM2" data-label="wren2 = (VGA) ? wren : 0 [1]">
+  <rect x="863.5460375" y="2587.4000000000005" width="139.42000000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="933.2560375" y="2602.5500000000006" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">wren2 = (VGA) ? wren : 0 [1]</text>
+</g>
+<g class="edge-label" data-from="RAM1" data-to="MUX_COR" data-label="color_in1 [8]">
+  <rect x="941.8969541666667" y="2795.500000000001" width="72.89200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="978.3429541666667" y="2810.650000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">color_in1 [8]</text>
+</g>
+<g class="edge-label" data-from="RAM2" data-to="MUX_COR" data-label="color_in2 [8]">
+  <rect x="1151.3779541666665" y="2795.500000000001" width="76.456" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1189.6059541666666" y="2810.650000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">color_in2 [8]</text>
+</g>
+<g class="edge-label" data-from="VGA_FLIP" data-to="MUX_COR" data-label="VGA sel [1]">
+  <rect x="681.3140374999999" y="2703.4500000000007" width="65.17" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="713.8990375" y="2718.600000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">VGA sel [1]</text>
+</g>
+<g class="edge-label" data-from="MUX_COR" data-to="VGA_DRV" data-label="color_in [8]">
+  <rect x="1003.7561208333334" y="3115.5760000000005" width="70.516" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1039.0141208333334" y="3130.7260000000006" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">color_in [8]</text>
+</g>
+<g class="edge-label" data-from="CLK25" data-to="VGA_DRV" data-label="clock_25 [1]">
+  <rect x="550.1555375" y="3115.5760000000005" width="71.70400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="586.0075375" y="3130.7260000000006" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">clock_25 [1]</text>
+</g>
+<g class="edge-label" data-from="VGA_DRV" data-to="VGA_FLIP" data-label="vsync [1]">
+  <rect x="642.5940374999999" y="2795.500000000001" width="57.448" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="671.3180375" y="2810.650000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">vsync [1]</text>
+</g>
+<g class="node" data-id="LEDR" data-label="&quot;💡 LEDR[4" data-shape="rectangle">
+  <rect x="643.0842583333333" y="2355.7000000000007" width="109.381" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="697.7747583333334" y="2374.1500000000005" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">&quot;💡 LEDR[4</text>
+</g>
+<g class="node" data-id="ADDR_REG" data-label="&quot;w_address_reg [17" data-shape="rectangle">
+  <rect x="1111.4781916666666" y="2254.9500000000007" width="156.805" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1189.8806916666665" y="2273.4000000000005" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">&quot;w_address_reg [17</text>
+</g>
+<g class="node" data-id="CALC_ADDR" data-label="÷ 2 (next_x_log / next_y_log)
+readVGA = (y*320) + x" data-shape="rectangle">
+  <rect x="1343.8481916666667" y="2254.9500000000007" width="207.19299999999996" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1447.4446916666666" y="2281.850000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1447.4446916666666" dy="-3.9000000000000012">÷ 2 (next_x_log / next_y_log)</tspan><tspan x="1447.4446916666666" dy="16.900000000000002">readVGA = (y*320) + x</tspan></text>
+</g>
+<g class="node" data-id="class" data-label="class" data-shape="rectangle">
+  <rect x="101" y="769.3000000000002" width="74.554" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="138.277" y="787.7500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">class</text>
+</g>
+<g class="node" data-id="HPS" data-label="🖥️ HPS (soc_system)
+ARM Cortex-A9" data-shape="rectangle">
+  <rect x="1741.2892833333335" y="118.225" width="173.84799999999998" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1828.2132833333335" y="145.125" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1828.2132833333335" dy="-3.9000000000000012">🖥️ HPS (soc_system)</tspan><tspan x="1828.2132833333335" dy="16.900000000000002">ARM Cortex-A9</tspan></text>
+</g>
+<g class="node" data-id="PLL" data-label="🕐 CLOCK_100MGH
+PLL (50 MHz → 100 MHz)" data-shape="rectangle">
+  <rect x="1419.8442833333336" y="118.225" width="181.999" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1510.8437833333335" y="145.125" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1510.8437833333335" dy="-3.9000000000000012">🕐 CLOCK_100MGH</tspan><tspan x="1510.8437833333335" dy="16.900000000000002">PLL (50 MHz → 100 MHz)</tspan></text>
+</g>
+<g class="node" data-id="KEY0" data-label="&quot;KEY[0" data-shape="rectangle">
+  <rect x="1629.8432833333336" y="118.225" width="83.446" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1671.5662833333336" y="136.675" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">&quot;KEY[0</text>
+</g>
+<g class="node" data-id="ED_ATIVA" data-label="rising_edge_detector
+(ativa)" data-shape="rectangle">
+  <rect x="907.3266500000002" y="356.1" width="169.402" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="992.0276500000002" y="383" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="992.0276500000002" dy="-3.9000000000000012">rising_edge_detector</tspan><tspan x="992.0276500000002" dy="16.900000000000002">(ativa)</tspan></text>
+</g>
+<g class="node" data-id="P_LATCH" data-label="pulse_latch
+(valid)" data-shape="rectangle">
+  <rect x="701.7164000000002" y="696.3000000000001" width="110.122" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="756.7774000000003" y="723.2" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="756.7774000000003" dy="-3.9000000000000012">pulse_latch</tspan><tspan x="756.7774000000003" dy="16.900000000000002">(valid)</tspan></text>
+</g>
+<g class="node" data-id="UC" data-label="⚙️ UnidadeDeControle
+FETCH → DECODE → SAVE" data-shape="rectangle">
+  <rect x="813.8357750000002" y="526.2" width="199.04199999999992" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="913.3567750000002" y="553.1" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="913.3567750000002" dy="-3.9000000000000012">⚙️ UnidadeDeControle</tspan><tspan x="913.3567750000002" dy="16.900000000000002">FETCH → DECODE → SAVE</tspan></text>
+</g>
+<g class="node" data-id="MUX_VID" data-label="MUX 3→1
+Seleção de Camada" data-shape="diamond">
+  <polygon points="1059.1074666666666,1775.3837500000004 1149.8804666666665,1866.1567500000003 1059.1074666666666,1956.9297500000002 968.3344666666666,1866.1567500000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1059.1074666666666" y="1866.1567500000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1059.1074666666666" dy="-3.9000000000000012">MUX 3→1</tspan><tspan x="1059.1074666666666" dy="16.900000000000002">Seleção de Camada</tspan></text>
+</g>
+<g class="node" data-id="ED_VSYNC" data-label="rising_edge_detector
+(vsync)" data-shape="rectangle">
+  <rect x="555.37015" y="1649.1000000000004" width="169.402" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="640.07115" y="1676.0000000000005" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="640.07115" dy="-3.9000000000000012">rising_edge_detector</tspan><tspan x="640.07115" dy="16.900000000000002">(vsync)</tspan></text>
+</g>
+<g class="node" data-id="MEF" data-label="🔄 MEF_geral_layer
+IDLE → BG → SPR/POL → IDLE" data-shape="rectangle">
+  <rect x="626.4026333333334" y="1819.2000000000003" width="211.63899999999992" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="732.2221333333333" y="1846.1000000000004" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="732.2221333333333" dy="-3.9000000000000012">🔄 MEF_geral_layer</tspan><tspan x="732.2221333333333" dy="16.900000000000002">IDLE → BG → SPR/POL → IDLE</tspan></text>
+</g>
+<g class="node" data-id="ED_SPR" data-label="rising_edge_detector
+(enableSprt)" data-shape="rectangle">
+  <rect x="745.8086999999999" y="1989.3000000000004" width="169.402" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="830.5097" y="2016.2000000000005" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="830.5097" dy="-3.9000000000000012">rising_edge_detector</tspan><tspan x="830.5097" dy="16.900000000000002">(enableSprt)</tspan></text>
+</g>
+<g class="node" data-id="BG" data-label="🌄 motorBack_Ground
+TileMap 40×30 (8×8 px)
+Scroll 4 direções
+contadorVid 320×240" data-shape="rectangle">
+  <rect x="1171.8904666666667" y="1174.8000000000002" width="178.29399999999998" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1261.0374666666667" y="1218.6000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1261.0374666666667" dy="-20.8">🌄 motorBack_Ground</tspan><tspan x="1261.0374666666667" dy="16.900000000000002">TileMap 40×30 (8×8 px)</tspan><tspan x="1261.0374666666667" dy="16.900000000000002">Scroll 4 direções</tspan><tspan x="1261.0374666666667" dy="16.900000000000002">contadorVid 320×240</tspan></text>
+</g>
+<g class="node" data-id="POL" data-label="🔺 motorPol
+4 Polígonos × 78 bits
+4× poligono_gerador
+divisor_por_4 + contadorVid" data-shape="rectangle">
+  <rect x="695.5764666666666" y="1174.8000000000002" width="210.89799999999997" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="801.0254666666666" y="1218.6000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="801.0254666666666" dy="-20.8">🔺 motorPol</tspan><tspan x="801.0254666666666" dy="16.900000000000002">4 Polígonos × 78 bits</tspan><tspan x="801.0254666666666" dy="16.900000000000002">4× poligono_gerador</tspan><tspan x="801.0254666666666" dy="16.900000000000002">divisor_por_4 + contadorVid</tspan></text>
+</g>
+<g class="node" data-id="SPR" data-label="👾 motorSprites_Blitter
+OAM 64 slots × 32 bits
+16×16 px, Flip X/Y
+FSM IDLE→OAM→ROM→BUF" data-shape="rectangle">
+  <rect x="934.4744666666666" y="1174.8000000000002" width="209.41599999999994" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1039.1824666666666" y="1218.6000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1039.1824666666666" dy="-20.8">👾 motorSprites_Blitter</tspan><tspan x="1039.1824666666666" dy="16.900000000000002">OAM 64 slots × 32 bits</tspan><tspan x="1039.1824666666666" dy="16.900000000000002">16×16 px, Flip X/Y</tspan><tspan x="1039.1824666666666" dy="16.900000000000002">FSM IDLE→OAM→ROM→BUF</tspan></text>
+</g>
+<g class="node" data-id="SP_ROM" data-label="💾 sprite_rom_m10k
+ROM de Sprites" data-shape="cylinder">
+  <rect x="1050.1824666666666" y="1385.7000000000003" width="156.805" height="53.80000000000001" fill="var(--_node-fill)" stroke="none" />
+  <line x1="1050.1824666666666" y1="1385.7000000000003" x2="1050.1824666666666" y2="1439.5000000000002" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="1206.9874666666667" y1="1385.7000000000003" x2="1206.9874666666667" y2="1439.5000000000002" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="1128.5849666666666" cy="1439.5000000000002" rx="78.4025" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="1128.5849666666666" cy="1385.7000000000003" rx="78.4025" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1128.5849666666666" y="1412.6000000000004" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1128.5849666666666" dy="-3.9000000000000012">💾 sprite_rom_m10k</tspan><tspan x="1128.5849666666666" dy="16.900000000000002">ROM de Sprites</tspan></text>
+</g>
+<g class="node" data-id="CLK25" data-label="divisor de clock
+clock_25 (25 MHz)" data-shape="rectangle">
+  <rect x="510.7170375" y="2943.788000000001" width="150.877" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="586.1555375" y="2970.688000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="586.1555375" dy="-3.9000000000000012">divisor de clock</tspan><tspan x="586.1555375" dy="16.900000000000002">clock_25 (25 MHz)</tspan></text>
+</g>
+<g class="node" data-id="VGA_FLIP" data-label="Flip-Flop VGA
+(Alterna a cada negedge vsync)" data-shape="rectangle">
+  <rect x="687.6100375" y="2490.600000000001" width="227.19999999999996" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="801.2100375" y="2517.500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="801.2100375" dy="-3.9000000000000012">Flip-Flop VGA</tspan><tspan x="801.2100375" dy="16.900000000000002">(Alterna a cada negedge vsync)</tspan></text>
+</g>
+<g class="node" data-id="RAM1" data-label="💾 RAMVIDEO #1
+76.800 Bytes (Dual-Port)" data-shape="cylinder">
+  <rect x="886.6564541666667" y="2691.7000000000007" width="183.481" height="53.80000000000001" fill="var(--_node-fill)" stroke="none" />
+  <line x1="886.6564541666667" y1="2691.7000000000007" x2="886.6564541666667" y2="2745.500000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="1070.1374541666667" y1="2691.7000000000007" x2="1070.1374541666667" y2="2745.500000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="978.3969541666667" cy="2745.500000000001" rx="91.7405" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="978.3969541666667" cy="2691.7000000000007" rx="91.7405" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="978.3969541666667" y="2718.600000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="978.3969541666667" dy="-3.9000000000000012">💾 RAMVIDEO #1</tspan><tspan x="978.3969541666667" dy="16.900000000000002">76.800 Bytes (Dual-Port)</tspan></text>
+</g>
+<g class="node" data-id="RAM2" data-label="💾 RAMVIDEO #2
+76.800 Bytes (Dual-Port)" data-shape="cylinder">
+  <rect x="1098.1374541666667" y="2691.7000000000007" width="183.481" height="53.80000000000001" fill="var(--_node-fill)" stroke="none" />
+  <line x1="1098.1374541666667" y1="2691.7000000000007" x2="1098.1374541666667" y2="2745.500000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="1281.6184541666667" y1="2691.7000000000007" x2="1281.6184541666667" y2="2745.500000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="1189.8779541666668" cy="2745.500000000001" rx="91.7405" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="1189.8779541666668" cy="2691.7000000000007" rx="91.7405" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1189.8779541666668" y="2718.600000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1189.8779541666668" dy="-3.9000000000000012">💾 RAMVIDEO #2</tspan><tspan x="1189.8779541666668" dy="16.900000000000002">76.800 Bytes (Dual-Port)</tspan></text>
+</g>
+<g class="node" data-id="MUX_COR" data-label="MUX de Cor
+(VGA: 0=RAM1, 1=RAM2)" data-shape="diamond">
+  <polygon points="1039.2561208333332,2868.800000000001 1141.144120833333,2970.688000000001 1039.2561208333332,3072.576000000001 937.3681208333331,2970.688000000001" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1039.2561208333332" y="2970.688000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1039.2561208333332" dy="-3.9000000000000012">MUX de Cor</tspan><tspan x="1039.2561208333332" dy="16.900000000000002">(VGA: 0=RAM1, 1=RAM2)</tspan></text>
+</g>
+<g class="node" data-id="VGA_DRV" data-label="📺 vga_driver
+Gerador de Timing VGA
+640×480 @ 60 Hz" data-shape="rectangle">
+  <rect x="620.1659125" y="3188.8760000000007" width="179.03499999999997" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="709.6834125" y="3224.2260000000006" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="709.6834125" dy="-12.350000000000001">📺 vga_driver</tspan><tspan x="709.6834125" dy="16.900000000000002">Gerador de Timing VGA</tspan><tspan x="709.6834125" dy="16.900000000000002">640×480 @ 60 Hz</tspan></text>
+</g>
+<g class="node" data-id="VGA_OUT" data-label="🖥️ DAC VGA (Resistores)
+RGB 8:8:8 + Sincronismo" data-shape="rectangle">
+  <rect x="626.1735791666667" y="3533.676000000001" width="196.81899999999996" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="724.5830791666667" y="3560.576000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="724.5830791666667" dy="-3.9000000000000012">🖥️ DAC VGA (Resistores)</tspan><tspan x="724.5830791666667" dy="16.900000000000002">RGB 8:8:8 + Sincronismo</tspan></text>
+</g>
+</svg>
