@@ -95,11 +95,11 @@ Exemplo: desenhar um polígono
 1. Opção 4, quatro vezes, com `vertice` de 0 a 3 e as coordenadas de cada vértice (a mesma camada nas quatro).
 2. Opção 5 com a mesma camada, `visivel` = 1, o formato em trapezio e a cor (1 a 255; a cor 0 é transparente).
 
-A opção 9 executa uma cena de demonstração completa (sprite, background, polígono e ordem de camadas). Rode ela primeiro para verificar se o sistema está funcionando.
+A opção 9 executa uma cena de demonstração completa (_sprite_, _background_, polígono e ordem de camadas). Rode ela primeiro para verificar se o sistema está funcionando.
 
 # Conclusão
 
-É possível concluir que os requisitos funcionais propostos para a segunda fase foram cumpridos com sucesso, visto que o sistema evoluiu de um conjunto de motores de desenho (sprites, polígonos e background) controlados manualmente por chaves e botões para um coprocessador programável, operando com uma ISA de 32 bits, com Unidade de Controlo, uso do protocolo de handshake e um driver em Assembly ARM acessado por uma aplicação em C, deixando o sistema preparado para a integração final com o jogo na fase 3. Além disso, o problema de sincronização visual apresentado no problema anterior foi solucionado, garantindo uma geração de imagem estável, outro requisito presente na fase 2. 
+É possível concluir que os requisitos funcionais propostos para a segunda fase foram cumpridos com sucesso, visto que o sistema evoluiu de um conjunto de motores de desenho (sprites, polígonos e background) controlados manualmente por chaves e botões para um coprocessador programável, operando com uma ISA de 32 bits, com Unidade de Controle, uso do protocolo de _handshake_ e um _driver_ em _Assembly_ ARM acessado por uma aplicação em C, deixando o sistema preparado para a integração final com o jogo na fase 3. Além disso, o problema de sincronização visual apresentado no problema anterior foi solucionado, garantindo uma geração de imagem estável, outro requisito presente na fase 2. 
 
 # Referências
 
