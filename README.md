@@ -139,7 +139,7 @@ O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de
 
 ![Diagrama de Alto Nível do Sistema](Imagens/Diagrama_de_alto_nivel.svg)
 
----
+# Testes e Erros
 
 ## Estabilização Temporal e Ajuste de Clock no Motor de Polígonos
 
@@ -180,9 +180,31 @@ O diagrama comparativo abaixo ilustra a diferença de comportamento entre o cicl
 
 ![Comparativo de Temporização e Estabilização de Clock](Imagens/estabilizacao_temporizacao_clock.svg)
 
+## Escrita única nos motores de sprites e polígonos
 
+A primeira grande alteração necessária para que as instruções funcionassem da forma esperada foi nos motores de sprites e polígonos. No Problema 1, os motores `motorSprites_Blitter` e `motorPol` guardavam todos os atributos de cada elemento em um único array, com um único sinal de escrita. Toda escrita sobrescrevia a palavra inteira, o que funcionava porque a antiga máquina de estados controladora sempre entregava todos os campos juntos. Porém, com a ISA, os atributos passaram a chegar por instruções diferentes: 
 
-## Arquitetura e Fluxo de Dados
+| Elemento| Instrução “info” | Instrução “config” |
+|:--------------:|:----:|:------:|
+| Sprites | `SPRITE_INFO`: id, x, y  | `SPRITE_CONFIG`: visivel, flipx, flipy   |
+| Polígonos | `POL_INFO`: coordenadas x, y de um vértice   | `POL_CONFIG`: cor, trapezio, visivel   |
+
+Com uma só escrita, cada instrução sobrescreveria também os campos que não carrega. A solução foi dividir a palavra de cada elemento em duas partes, info e config, com um sinal de escrita para cada uma pois, dessa forma, cada escrita altera apenas a sua parte e preserva a outra. : 
+
+| Motor | Escrita da parte info  | Escrita da parte config  |
+|:--------------:|:----:|:------:|
+| Sprites | `spr_write_en_info`   | `spr_write_en_config`   |
+| Polígonos | pol_salva_info    | pol_salva_config    |
+
+## Erro de largura na escrita de config do motor de _sprites_
+
+Houve também, após a alteração citada acima, um erro de largura na escrita de config no motor de _sprites_. Na primeira versão da escrita de config havia `5'd0` onde deveria haver `6'd0`: 
+```
+versão com erro:
+
+oam[spr_write_idx] <= {oam[spr_write_idx][31:9], spr_write_flip_x, spr_write_flip_y, spr_write_visivel, 5'd0};
+```
+A concatenação tinha 23 + 3 + 5 = 31 bits, mas a variável `oam` tem 32 bits. Porém, o Verilog completa o bit mais significativo com zero e compila normalmente, e o efeito é que a palavra inteira era deslocada em um bit para baixo a cada escrita de config, “perdendo” o bit mais significativo de x. O resultado observado foi que _sprites_ apareciam na posição errada.
 
 # Manual de Uso
 
@@ -265,23 +287,14 @@ A opção 9 executa uma cena de demonstração completa (_sprite_, _background_,
 
 # Referências
 
-1. **Recursos de Hardware e Manuais da Placa (DE1-SoC / Cyclone V)**:
-   - Laboratório de Tecnologia da Computação (LTEC3 - LEDS / UEFS). *Recursos da Placa DE1-SoC e Cyclone V*. Disponível em: [https://sites.google.com/uefs.br/ltec3-leds/recursos](https://sites.google.com/uefs.br/ltec3-leds/recursos).
-   - Intel Corporation. *Cyclone V Device Handbook, Volume 3: Hard Processor System Technical Reference Manual*. Disponível em: [Intel FPGA Documentation](https://www.intel.com/content/www/us/en/docs/programmable/683126/current/cyclone-v-hard-processor-system-technical.html).
-   - Intel Corporation. *Embedded Design Handbook: HPS-FPGA Bridges*. Disponível em: [Intel HPS-FPGA Bridges Guide](https://www.intel.com/content/www/us/en/docs/programmable/683260/current/hps-fpga-bridges.html).
-
-2. **Protocolos de Handshake e Comunicação entre Domínios**:
-   - GeeksforGeeks. *Asynchronous Data Transfer – Handshaking*. Disponível em: [https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/](https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/).
-   - All About Circuits. *Understanding Handshaking in Digital Communications*. Disponível em: [https://www.allaboutcircuits.com/technical-articles/understanding-handshaking-in-digital-communications/](https://www.allaboutcircuits.com/technical-articles/understanding-handshaking-in-digital-communications/).
-
-3. **Tempo de Propagação, Atrasos e Análise Temporal em Circuitos Digitais**:
-   - All About Circuits. *Understanding Propagation Delay in Digital Circuits*. Disponível em: [https://www.allaboutcircuits.com/technical-articles/understanding-propagation-delay-in-digital-circuits/](https://www.allaboutcircuits.com/technical-articles/understanding-propagation-delay-in-digital-circuits/).
+  - All About Circuits. *Understanding Handshaking in Digital Communications*. Disponível em: [https://www.allaboutcircuits.com/technical-articles/understanding-handshaking-in-digital-communications/](https://www.allaboutcircuits.com/technical-articles/understanding-handshaking-in-digital-communications/).
+  - All About Circuits. *Understanding Propagation Delay in Digital Circuits*. Disponível em: [https://www.allaboutcircuits.com/technical-articles/understanding-propagation-delay-in-digital-circuits/](https://www.allaboutcircuits.com/technical-articles/understanding-propagation-delay-in-digital-circuits/).
+  - Intel Corporation. *Cyclone V Device Handbook, Volume 3: Hard Processor System Technical Reference Manual*. Disponível em: [Intel FPGA Documentation](https://www.intel.com/content/www/us/en/docs/programmable/683126/current/cyclone-v-hard-processor-system-technical.html).
+  - Intel Corporation. *Embedded Design Handbook: HPS-FPGA Bridges*. Disponível em: [Intel HPS-FPGA Bridges Guide](https://www.intel.com/content/www/us/en/docs/programmable/683260/current/hps-fpga-bridges.html).
+  - Intel Corporation. *Understanding Metastability in FPGAs* (Application Note 42). Disponível em: [Intel FPGA Metastability Guide](https://www.intel.com/content/dam/www/programmable/us/en/pdfs/literature/an/an042.pdf).
+  - GeeksforGeeks. *Asynchronous Data Transfer – Handshaking*. Disponível em: [https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/](https://www.geeksforgeeks.org/asynchronous-data-transfer-handshaking/).
+  - GeeksforGeeks. *Control Unit and its Types in Computer Architecture*. Disponível em: [https://www.geeksforgeeks.org/control-unit-and-its-types/](https://www.geeksforgeeks.org/control-unit-and-its-types/).
+  - Laboratório de Tecnologia da Computação (LTEC3 - LEDS / UEFS). *Recursos da Placa DE1-SoC e Cyclone V*. Disponível em: [https://sites.google.com/uefs.br/ltec3-leds/recursos](https://sites.google.com/uefs.br/ltec3-leds/recursos).
+  - PATTERSON, David A.; HENNESSY, John L. *Computer Organization and Design: The Hardware/Software Interface*. 5th ed. Morgan Kaufmann / Elsevier.
+  - STALLINGS, William. *Computer Organization and Architecture: Designing for Performance*. 10th ed. Pearson Education.
    - WAKERLY, John F. *Digital Design: Principles and Practices*. 4th ed. Pearson Prentice Hall.
-   - Intel Corporation. *Understanding Metastability in FPGAs* (Application Note 42). Disponível em: [Intel FPGA Metastability Guide](https://www.intel.com/content/dam/www/programmable/us/en/pdfs/literature/an/an042.pdf).
-
-4. **Organização de Processadores e Unidade de Controle**:
-   - PATTERSON, David A.; HENNESSY, John L. *Computer Organization and Design: The Hardware/Software Interface*. 5th ed. Morgan Kaufmann / Elsevier.
-   - STALLINGS, William. *Computer Organization and Architecture: Designing for Performance*. 10th ed. Pearson Education.
-   - GeeksforGeeks. *Control Unit and its Types in Computer Architecture*. Disponível em: [https://www.geeksforgeeks.org/control-unit-and-its-types/](https://www.geeksforgeeks.org/control-unit-and-its-types/).
-
-
