@@ -6,6 +6,9 @@
   - [Tempo de Propagação em Circuitos Digitais](#tempo-de-propagação-em-circuitos-digitais)
   - [Funcionamento da Unidade de Controle em Processadores](#funcionamento-da-unidade-de-controle-em-processadores)
 - [Manual do Sistema](#manual-do-sistema)
+  - [Arquitetura do sistema](#arquitetura-do-sistema)
+  - [ISA](#isa)
+  - [Teste Desenvolvido](#teste-desenvolvido)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
 - [Conclusão](#conclusão)
@@ -138,6 +141,10 @@ O seguinte projeto marca a segunda fase de um problema, que tem como propósito 
 O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de barramentos de memória mapeada (MMIO), permitindo que comandos emitidos por aplicações em software sejam convertidos em primitivas gráficas aceleradas por hardware. O fluxo global de interconexão entre as camadas do sistema pode ser visualizado no diagrama a seguir:
 
 ![Diagrama de Alto Nível do Sistema](Imagens/Diagrama_de_alto_nivel.svg)
+
+## ISA
+
+## Teste desenvolvido
 
 # Testes e Erros
 
