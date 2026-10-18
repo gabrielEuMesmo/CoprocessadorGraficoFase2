@@ -131,8 +131,6 @@ A estrutura é organizada em torno de um Registrador de Instruções de 32 bits 
 
 Dessa forma, a Unidade de Controle atua como o elo integrador entre a ISA de 32 bits emitida pelo software e as ações físicas dos motores de desenho no hardware.
 
----
-
 # Manual do Sistema
 
 O seguinte projeto marca a segunda fase de um problema, que tem como propósito a construção de um coprocessador programável, controlado por instruções de 32 bits enviadas pelo HPS (Hard Processor System) através de uma ISA e uma Unidade de Controle, além do desenvolvimento de um driver e uma aplicação teste em C, deixando a base pronta para a integração com o jogo na fase final.
@@ -153,7 +151,37 @@ O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de
 
 ![Diagrama de Alto Nível do Sistema](Imagens/Diagrama_de_alto_nivel.svg)
 
-## ISA
+### ISA
+
+A Instruction Set Architecture (ISA) estabelece a comunicação entre o software e o hardware do coprocessador, onde cada comando é uma palavra de 32 bits, onde os três bits mais significativos (`[31:29]`) atuam como o opcode, identificando qual operação realizar. Os 29 bits restantes variam dependendo do opcode, sendo mapeados em campos específicos que contêm os operandos da instrução. As secções marcadas com X representam bits não utilizados, que são utilizados apenas para completar a dimensão da palavra.
+
+| Instrução | Opcode [31:29]  | Campos (do bit mais significativo ao menos) | Descrição  |
+|:--------------:|:----:|:------:|:------:|
+| `RESET` | 001 | X…X    | Zera os registradores de saída da UC e gera um pulso de reset nos motores   |
+| `SPRITE_INFO` | 010 | camada[28:23] (6) · id[22:17] (6) · x[16:8] (9) · y[7:0] (8)    | Define posição e padrão de um sprite   |
+| `SPRITE_CONFIG`  | 011 | X[28:9] · camada[8:3] (6) · visivel[2] · flipx[1] · flipy[0]    | Define visibilidade e espelhamento de um sprite    |
+| `POL_INFO`  | 100 | X[28:21] · camada[20:19] (2) · vertice[18:17] (2) · x[16:8] (9) · y[7:0] (8)     | Define as coordenadas de um vértice de um polígono     |
+| `POL_CONFIG`  | 101| X[28:12] · camada[11:10] (2) · visivel[9] · trapezio[8] · cor[7:0] (8)     | Define cor, visibilidade e formato de um polígono   |
+| `BG_INFO`  | 110 | X[28:22] · funcao[21] · roll[20:19] (2) · x[18:13] (6) · y[12:8] (5) · cor[7:0] (8)    | Altera um tile do background ou o deslocamento (roll)    |
+| `TOGGLE_LAYER ` | 111 |X[28:1] · layer[0]  | Define a ordem de desenho das camadas    |
+
+### Interface HPS-CoProcessador
+
+O protocolo segue o handshake de quatro fases descrito na [Fundamentação Teórica](#protocolo-de-handshake-e-aplicação-no-sistema), que foi mapeado da seguinte forma no hardware e no driver:
+
+| PIO| Offset | Largura | Sentido (visto pelo HPS) | Sinal do coprocessador|
+|:--------------:|:----:|:------:|:------:|:-------:|
+| `pio_inst ` | 0x00 | 32   | saída | `instrucao` (entrada da UC)  |
+| `pio_ativa  ` | 0x10 | 1  | saída | `ativa`, que passa pelo detector de borda   |
+| `pio_ready  ` | 0x20 | 1  | entrada| `ready` (saída da UC)   |
+| `pio_valid  ` | 0x30 | 1  | entrada| `sticky_ack` (saída do `pulse_latch`)   |
+| `pio_clear  ` | 0x40 | 1  | saída | `clear_from_hps` (entrada do `pulse_latch`) |
+
+Na primeira fase. a verificação e envio é conduzida pelo Driver (através de `wait_ready`), que lê o sinal `pio_ready` em pooling até que atinja o valor !, realizando em seguia a escrita em `pio_inst` e definindo `pio_ativa` = 1. A segunda fase, referente ao reconhecimento, é executada pela Unidade de Controle (UC) em conjunto com o `pulse_latch`: o sinal `ativa_pulse` leva a UC do estado `FETCH` para `DECODE`, gerando o `valid_pulse`, e o módulo `pulse_latch` atua retendo o sinal `pio_valid` = 1.
+
+Na terceira fase, de desativação da requisição, o driver assume novamente o controle (via `wait_valid_1`) e, ao verificar a condição de `pio_valid` = 1, escreve `pio_clear` = 1 e reduz `pio_ativa` = 0. A quarta e última fase é operada de forma combinada pelo `pulse_latch` e pelo driver (`wait_valid_0`). Nesta etapa de encerramento do ciclo, o latch zera o sinal `pio_valid`, fazendo com que o driver aguarde a leitura de `pio_valid` = 0 para finalmente escrever `pio_clear` = 0.
+
+O protocolo de quatro fases pode ser representado através do diagrama a seguir: IMAGEM
 
 ## Teste desenvolvido
 
