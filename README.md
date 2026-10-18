@@ -19,6 +19,7 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
   - [Requisitos do problema](#requisitos-do-problema)
   - [Arquitetura e Fluxo de Dados](#arquitetura-e-fluxo-de-dados)
     - [ISA](#isa)
+    - [Interface HPS-CoProcessador](#interface-hps-coprocessador)
   - [Teste Desenvolvido](#teste-desenvolvido)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
@@ -171,11 +172,11 @@ O protocolo segue o handshake de quatro fases descrito na [Fundamentação Teór
 
 | PIO| Offset | Largura | Sentido (visto pelo HPS) | Sinal do coprocessador|
 |:--------------:|:----:|:------:|:------:|:-------:|
-| `pio_inst ` | 0x00 | 32   | saída | `instrucao` (entrada da UC)  |
-| `pio_ativa  ` | 0x10 | 1  | saída | `ativa`, que passa pelo detector de borda   |
-| `pio_ready  ` | 0x20 | 1  | entrada| `ready` (saída da UC)   |
-| `pio_valid  ` | 0x30 | 1  | entrada| `sticky_ack` (saída do `pulse_latch`)   |
-| `pio_clear  ` | 0x40 | 1  | saída | `clear_from_hps` (entrada do `pulse_latch`) |
+| `pio_inst` | 0x00 | 32   | saída | `instrucao` (entrada da UC)  |
+| `pio_ativa` | 0x10 | 1  | saída | `ativa`, que passa pelo detector de borda   |
+| `pio_ready` | 0x20 | 1  | entrada| `ready` (saída da UC)   |
+| `pio_valid` | 0x30 | 1  | entrada| `sticky_ack` (saída do `pulse_latch`)   |
+| `pio_clear` | 0x40 | 1  | saída | `clear_from_hps` (entrada do `pulse_latch`) |
 
 Na primeira fase. a verificação e envio é conduzida pelo Driver (através de `wait_ready`), que lê o sinal `pio_ready` em pooling até que atinja o valor !, realizando em seguia a escrita em `pio_inst` e definindo `pio_ativa` = 1. A segunda fase, referente ao reconhecimento, é executada pela Unidade de Controle (UC) em conjunto com o `pulse_latch`: o sinal `ativa_pulse` leva a UC do estado `FETCH` para `DECODE`, gerando o `valid_pulse`, e o módulo `pulse_latch` atua retendo o sinal `pio_valid` = 1.
 
