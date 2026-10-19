@@ -190,7 +190,8 @@ Na terceira fase, de desativação da requisição, o _driver_ assume novamente 
 
 O protocolo de quatro fases pode ser representado através do diagrama a seguir: 
 
-![Protocolo de 4 fases do handshake](Imagens/protocolodehandshake.png)
+![Protocolo de 4 fases do handshake](Imagens/protocolo_handshake.png)
+
 Figura 2: Protocolo de 4 fases do _Handshake_.
 
 ### _Driver Assembly_
@@ -257,7 +258,8 @@ Diferente do problema 1, o módulo agora usa um _clock_ dividido por 4 (`divisor
 
 É possível visualizar, na análise de recursos, que o projeto utilizou 11.606 ALMs (36% dos 32.070 disponíveis), 16.390 registradores, 1.886.208 bits de memória de bloco (46% dos 4.065.280) e 1 PLL (17%), além de 382 pinos (84%) e 1 DLL (25%). Em relação ao Problema 1, que usava 8.314 ALMs (26%), 11.985 registradores e 1.359.872 bits de memória (33%), houve aumento de cerca de 40% na lógica e nos registradores e de cerca de 39% na memória. Esse acréscimo é explicado pela Unidade de Controle, pela interface de _handshake_ e, principalmente, pelo sistema do HPS. O uso de blocos DSP permaneceu em 80 dos 87 (92%), igual ao do Problema 1.
 
-![Analise de recursos](Imagens/analisederecursos.jpeg)
+![Analise de recursos](Imagens/analise_recursos.jpeg)
+
 Figura 3: Análise de recursos
 
 ## Teste desenvolvido
@@ -274,11 +276,16 @@ Por fim, a instrução `TOGGLE_LAYER 1` é enviada para testar a definição da 
 
 Porém, há um problema nos testes desenvolvidos, pois as posições usadas não se sobrepõem. O polígono ocupa a região de 0,0 a 100,100, o sprite fica em 200,200. Por isso, a sequência não demonstra visualmente a prioridade entre as camadas de sprites e de polígonos. Para verificar essa funcionalidade, é necessário que o próprio usuário sobreponha um sprite com um polígono e altere a ordem das camadas. 
 
-![Teste com a alternância de camadas, sprites por cima de polígonos]()
+![Teste com a alternância de camadas, sprites por cima de polígonos](Imagens/toggle_layer_sprite_cima.jpg)
 Figura 4: Teste com a alternância de camadas, _sprites_ por cima de polígonos
 
-![Teste com a alternância de camadas, polígonos por cima de sprites]()
+
+![Teste com a alternância de camadas, polígonos por cima de sprites](Imagens/toggle_layer_sprite_embaixo.jpg)
 Figura 5: Teste com a alternância de camadas, polígonos por cima de _sprites_
+
+
+![Teste com a alternância de trapezio](Imagens/trapezio_ligado.jpg)
+Figura 6: Teste com a alternância da opção trapézio
 
 # Testes e Erros
 
@@ -300,7 +307,7 @@ Para determinar se um pixel pertence ao interior da forma, o circuito executa o 
 Como essa cadeia de cálculos é realizada em paralelo para múltiplas arestas e múltiplos polígonos simultâneos, o sinal precisa atravessar uma sequência profunda de portas lógicas e blocos multiplicadores antes de gerar o pixel final:
 
 ![Caminho Crítico Combinacional do Gerador de Polígonos](Imagens/calculo_aresta_poligono.svg)
-Figura 6: Caminho Crítico Combinacional do Gerador de Polígonos
+Figura 7: Caminho Crítico Combinacional do Gerador de Polígonos
 
 ### O Problema do Ciclo de _Clock_ Curto
 Quando o motor de polígonos operava diretamente sob a frequência mais alta do sistema, o intervalo de tempo entre duas bordas ativas de _clock_ era extremamente estreito. 
@@ -321,7 +328,7 @@ Ao multiplicar o período do ciclo de _clock_, estabeleceu-se uma dinâmica temp
 O diagrama comparativo abaixo ilustra a diferença de comportamento entre o ciclo original insuficiente e o ciclo estendido:
 
 ![Comparativo de Temporização e Estabilização de Clock](Imagens/estabilizacao_temporizacao_clock.svg)
-Figura 7: Comparativo de Temporização e Estabilização de Clock
+Figura 8: Comparativo de Temporização e Estabilização de _Clock_
 
 ## Escrita única nos motores de sprites e polígonos
 
@@ -351,7 +358,16 @@ A concatenação tinha 23 + 3 + 5 = 31 bits, mas `oam` tem 32 bits. Porém, o Ve
 
 Imagens de alguns testes realizados durante o desenvolvimento da fase 2:
 
+![Teste 1](Imagens/teste1.jpg)
+Figura 9: Polígono, _background_ e _sprite_ na tela
 
+
+![Teste 2](Imagens/teste2.jpg)
+Figura 10: Polígono, _sprites_ e alternância de camadas
+
+
+![Teste 3](Imagens/teste3.jpg)
+Figura 11: Mais de um polígono na tela, _sprites_ e alternância de camadas
 
 # Manual de Uso
 
