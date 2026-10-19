@@ -25,7 +25,7 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
   - [Blocos funcionais](#blocos-funcionais)
     - [ghrd_top](#ghrd_top)
     - [Unidade de controle](#Unidade-de-Controle-UnidadeDeControle)
-    - [Detector de borda e trava de pulso](#Detector-de-borda-rising_edge_detector-e-trava-de-pulso-pulse_latch)
+    - [Detector de borda e trava de pulso](#Detector-de-borda-e-trava-de-pulso-rising_edge_detector-e-pulse_latch)
     - [Gerenciador de camdas](#Gerenciador-de-camadas-MEF_geral_layer)
     - [motorVideoTop](#motorvideotop)
     - [Motor de Sprites](#Motor-de-sprites-motorSprites_Blitter)
@@ -247,7 +247,7 @@ Em relação ao problema 1, houveram três mudanças: novas portas de escrita se
 
 O motor possui uma matriz (`oam`) com 64 entradas de 32 bits, uma por sprite. Cada entrada guarda, do bit mais significativo ao menos, a posição x (9 bits), a posição y (8 bits), o identificador do padrão (6 bits), `flip_x`, `flip_y` e `visivel`, com os 6 bits menos significativos livres. A escrita usa dois sinais separados: `spr_write_en_info` regrava x, y e id e preserva os 9 bits menos significativos, enquanto `spr_write_en_config` regrava os três bits de configuração e preserva `[31:9]`.
 
-### Motor de Polígonos (`motorPol`)
+### Rasterizador de Polígonos (`motorPol`)
 
 O motor guarda quatro polígonos de 78 bits, os 68 bits menos significativos guardam os quatro vértices (17 bits cada, x com 9 bits e y com 8), e os 10 mais significativos guardam a configuração: visibilidade, formato (trapezio) e cor de 8 bits. A escrita de info escolhe o vértice pelo campo cordenada e preserva os outros três; a escrita de config regrava só os 10 bits mais signifcativos, sendo as duas escritas independentes, selecionadas por `salva_info` e `salva_config`.
 
