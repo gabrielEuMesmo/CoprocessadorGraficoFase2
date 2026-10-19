@@ -22,6 +22,14 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
     - [Interface HPS-CoProcessador](#interface-hps-coprocessador)
     - [Driver Assembly](#driver-assembly)
     - [Aplicação C](#aplicação-c)
+  - [Blocos funcionais](#blocos-funcionais)
+    - [ghrd_top](#ghrd_top)
+    - [Unidade de controle](#Unidade-de-Controle-(UnidadeDeControle))
+    - [Detector de borda e trava de pulso](#Detector-de-borda-(rising_edge_detector)-e-trava-de-pulso-(pulse_latch))
+    - [Gerenciador de camdas](#Gerenciador-de-camadas-(MEF_geral_layer))
+    - [motorVideoTop](#motorvideotop)
+    - [Motor de Sprites](#Motor-de-sprites-(motorSprites_Blitter))
+    - [Rasterizador de polígonos](#Rasterizador-de-polígonos-(motorPol))
   - [Teste Desenvolvido](#teste-desenvolvido)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
@@ -197,9 +205,57 @@ Já a função `enviar_instrucao` tem o papel de executar o handshake, descrito 
 
 A aplicação de teste, desenvolvida em linguagem C e criado para utilizar as funções do driver, disponibiliza um menu interativo que oferece uma opção dedicada para cada instrução disponível. Para garantir o envio correto dos dados, a aplicação possui uma validação da faixa de cada campo através da função `ler_campo` antes da submissão da instrução, suportando entradas tanto em formato decimal como hexadecimal. Com a finalidade de testar o sistema, foi incluída uma opção que permite a leitura direta dos periféricos de entrada/saída (PIOs) `ready` e `valid`. Por fim, o menu apresenta uma opção de sequência de teste completa, que serve como demonstração das funcionalidades do projeto.
 
+## Blocos funcionais
+
+Nesta seção, serão descritos apenas os módulos criados na fase 2 do problema ou que sofreram alterações significativas nessa parte do projeto.
+
+### `ghrd_top`
+
+Novo top-level do projeto, baseado no projeto de referência da Terasic e adaptado para o coprocessador. Recebe o clock de 50 MHz (`CLOCK_50`), o botão `KEY[0]` de reset e todos os pinos do HPS, e entrega os sinais de vídeo VGA. 
+
+Possui três blocos principais: o primeiro é o PLL CLOCK_100MGH, que gera o clock de 100 MHz (`outclk_0`) a partir do de 50 MHz; o segundo é o sistema `soc_system`, que contém o HPS, a ponte lightweight e os cinco PIOs do handshake, exportados como os fios `instrucao`, `ativa`, `ready`, `valid` e `clear`; e o terceiro é o `top_sistema`, que recebe esses cinco fios, o clock de 100 MHz e o reset, e produz `VGA_R/G/B`, `VGA_HS`, `VGA_VS`, `VGA_CLK`, `VGA_BLANK_N`, `VGA_SYNC_N`.
+
+### Unidade de Controle (`UnidadeDeControle`)
+
+Bloco que substitui o `controlador_MEF`, que antes lia botões e chaves e gerava pulsos de escrita, a Unidade de Controle recebe a palavra de 32 bits (`instrucao`), o sinal `ativa`, o clock e o reset. 
+
+Possui quatro tipos de saída: os barramentos de campos de cada motor (`spr_write_*`, `pol_*`, `bg_*`), os pulsos de escrita (`spr_salva_info`, `spr_salva_config`, `pol_salva_info`, `pol_salva_config`, `bg_salva_info`, `bg_WRoll`, `geral_layer_save`), o bit `geral_layer` e os sinais de protocolo `ready`, `valid` e `reset`. 
+
+É possível saber mais detalhes sobre a Unidade de Controle na [Fundamentação Teórica](#funcionamento-da-unidade-de-controle-em-processadores).
+
+### Detector de borda e trava de pulso (`rising_edge_detector` e `pulse_latch`)
+
+O `rising_edge_detector` recebe um nível (`level_i`) e entrega um pulso de um ciclo (`pulse_o`) quando o nível sobe. Ele guarda o valor anterior da entrada em um registrador (`level_d`) e produz `pulse_o = level_i & ~level_d`. 
+
+O mesmo módulo é usado em mais de um ponto do sistema: na `MEF_geral_layer`, para transformar o `vsync` em um pulso de início de quadro, e no `motorVideoTop`, para transformar o nível `enableSprt` em um pulso de início do blitter.
+
+Já o `pulse_latch` recebe o pulso de um ciclo gerado pela UC (`pulse_in`, que é o valid) e o comando `clear_from_hps`, e mantém na saída `sticky_ack` o valor retido. O pulso `liga` a trava e o `clear` a desliga; se ambos chegarem no mesmo ciclo, o pulso prevalece. A saída é lida pelo HPS como `pio_valid`.
+
+### Gerenciador de camadas (`MEF_geral_layer`)
+
+A MEF recebe o `vsync`, os avisos de fim de cada motor (`doneBg`, `donePol`, `doneSprt`) e o bit `layer_order`, e produz `enableBg`, `enablePol` e `enableSprt`, com no máximo um ativo por vez. Ela fica em `IDLE` até o pulso de `vsync`, passa por `BG` e depois pelas outras duas camadas na ordem definida por `layer_order:` com 1, a sequência é fundo, sprites e polígonos; com 0, fundo, polígonos e sprites.
+
+O sinal `layer_order` é a saída `geral_layer` da Unidade de Controle, ligada diretamente à MEF e ao `motorVideoTop`. Ele permanece no registrador da UC até a próxima instrução `TOGGLE_LAYER,` ou até um `RESET`, que o zera.
+
+### `motorVideoTop`
+
+Esse módulo junta a MEF, os três motores e o multiplexador final. Ele recebe as saídas de dados e pulsos da UC e as encaminha para o motor correspondente. Entrega ao `FrameBuffer` o endereço, o pixel e o sinal de escrita (`wren`) da camada que a MEF autorizou naquele momento. Quando `enableBg` está ativo, o fundo é sempre escrito, o que também limpa o quadro a cada ciclo de desenho. Quando `enablePol` ou `enableSprt` estão ativos, a escrita só acontece se o pixel for diferente de zero, aplicando a transparência. 
+
+Em relação ao problema 1, houveram três mudanças: novas portas de escrita separadas (`pol_salva_info`, `pol_salva_config`, `spr_write_en_info`, `spr_write_en_config`) e a entrada `layer_order`; o início do _blitter_, agora por pulso de borda sobre `enableSprt`, para que ele não reinicie enquanto o estado `SPRT` durar; e, por fim, o multiplexador deixou de ser combinacional e passou a ser registrado: endereço, pixel e `wren` são amostrados na borda de descida do _clock_, o que dá meio ciclo de margem para os sinais dos motores, que mudam na borda de subida, se estabilizarem antes da escrita na RAM, e protege o `FrameBuffer` de _glitches_.
+
+### Motor de Sprites (`motorSprites_Blitter`)
+
+O motor possui uma matriz (`oam`) com 64 entradas de 32 bits, uma por sprite. Cada entrada guarda, do bit mais significativo ao menos, a posição x (9 bits), a posição y (8 bits), o identificador do padrão (6 bits), `flip_x`, `flip_y` e `visivel`, com os 6 bits menos significativos livres. A escrita usa dois sinais separados: `spr_write_en_info` regrava x, y e id e preserva os 9 bits menos significativos, enquanto `spr_write_en_config` regrava os três bits de configuração e preserva `[31:9]`.
+
+### Motor de Polígonos (`motorPol`)
+
+O motor guarda quatro polígonos de 78 bits, os 68 bits menos significativos guardam os quatro vértices (17 bits cada, x com 9 bits e y com 8), e os 10 mais significativos guardam a configuração: visibilidade, formato (trapezio) e cor de 8 bits. A escrita de info escolhe o vértice pelo campo cordenada e preserva os outros três; a escrita de config regrava só os 10 bits mais signifcativos, sendo as duas escritas independentes, selecionadas por `salva_info` e `salva_config`.
+
+Diferente do problema 1, o módulo agora usa um _clock_ dividido por 4 (`divisor_por_4`, contador de 2 bits cujo bit mais significativo forma a saída), e cada coordenada fica estável por quatro ciclos do _clock_ de 100 MHz, o que dá mais tempo à lógica combinacional do rasterizador antes do multiplexador mostrar os pixels.
+
 ## Teste desenvolvido
 
-O teste de validação do sistema é a sequência completa (opção 9 do menu da aplicação em C). Ela envia ao coprocessador, pelo HPS, um pequeno programa gráfico que usa todas as instruções operacionais da ISA e aciona os três motores ao mesmo tempo. Com isso, ela realiza o caminho completo: aplicação em C, driver em Assembly, handshake, Unidade de Controle, motores gráficos, compositor e saída VGA. 
+O teste de validação do sistema é a sequência completa, presente na opção 9 do menu da aplicação em C. Ela envia ao coprocessador, pelo HPS, um pequeno programa gráfico que usa todas as instruções operacionais da ISA e aciona os três motores ao mesmo tempo. Com isso, ela realiza o caminho completo: aplicação em C, driver em Assembly, handshake, Unidade de Controle, motores gráficos, compositor e saída VGA. 
 
 A sequência de testes tem início com o envio da instrução `RESET`, limpando qualquer elemento que esteja na tela. Em seguida, a instrução `SPRITE_INFO 1, 5, 200, 200` é enviada para validar a escrita da parte info do sprite, com o padrão de identificação 5 e a posição (200, 200). O passo seguinte é o envio de `SPRITE_CONFIG 1, 1, 0, 1` para validar a escrita da parte config, testando se a imagem fica visível, sem espelhamento horizontal e com espelhamento vertical. O resultado visível esperado é o aparecimento do sprite já espelhado verticalmente, na posição 200, 200.
 
