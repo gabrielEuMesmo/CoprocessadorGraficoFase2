@@ -2,13 +2,13 @@
 
 O CoProcessador Gráfico Programável desenvolvido é inspirado na arquitetura de consoles de 16 bits e possui três motores gráficos que trabalham em conjunto:
 
-- Motor de background: tilemap de 40×30 posições com tiles de 8×8 pixels, com 256 padrões disponíveis, alteração individual de tiles e deslocamento vertical e horizontal (roll) da camada.
-- Motor de sprites: até 64 sprites de 16×16 pixels, com prioridade, definição de posição, espelhamento horizontal e vertical, visibilidade e transparência.
+- Motor de _background_: _tilemap_ de 40×30 posições com _tiles_ de 8×8 pixels, com 256 padrões disponíveis, alteração individual de _tiles_ e deslocamento vertical e horizontal (_roll_) da camada.
+- Motor de _sprites_: até 64 _sprites_ de 16×16 pixels, com prioridade, definição de posição, espelhamento horizontal e vertical, visibilidade e transparência.
 - Rasterizador de polígonos: até 4 polígonos de 3 ou 4 vértices, com cor configurável.
   
-A principal mudança do Problema 2 é que toda operação passa a ser consequência da execução de uma instrução da ISA definida pela equipe. Sendo assim, o controle dos motores, que antes era realizado pelo módulo `controlador_MEF` através da leitura das entradas `KEY` e `SW`, passou a ser feito por uma Unidade de Controle responsável por descodificar instruções de 32 bits. Além disso, a sincronização de comandos  deixou de ser através de um pulso de botão e passou a ser um protocolo de handshake utilizando os sinais `ativa`, `ready`, `valid` e `clear`. Já relacionado a software, que não existia na primeira fase, foi agora integrado um driver em Assembly ARM em conjunto com uma aplicação em C com um menu integrado. Por fim, como uma adição extra que não é parte dos requisitos do problema, a ordem das camadas de polígonos e sprites, que anteriormente era fixa, passou a ser alternável. 
+A principal mudança do Problema 2 é que toda operação passa a ser consequência da execução de uma instrução da ISA definida pela equipe. Sendo assim, o controle dos motores, que antes era realizado pelo módulo `controlador_MEF` através da leitura das entradas `KEY` e `SW`, passou a ser feito por uma Unidade de Controle responsável por descodificar instruções de 32 bits. Além disso, a sincronização de comandos  deixou de ser através de um pulso de botão e passou a ser um protocolo de _handshake_ utilizando os sinais `ativa`, `ready`, `valid` e `clear`. Já relacionado a _software_, que não existia na primeira fase, foi agora integrado um _driver_ em _Assembly_ ARM em conjunto com uma aplicação em C com um menu integrado. Por fim, como uma adição extra que não é parte dos requisitos do problema, a ordem das camadas de polígonos e _sprites_, que anteriormente era fixa, passou a ser alternável. 
 
-O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, descrito na linguagem de descrição de hardware Verilog, através do ambiente de desenvolvimento Quartus Prime, com saída VGA 640×480 a 60 Hz, a partir de uma resolução lógica de 320×240.
+O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, descrito na linguagem de descrição de _hardware_ Verilog, através do ambiente de desenvolvimento _Quartus Prime_, com saída VGA 640×480 a 60 Hz, a partir de uma resolução lógica de 320×240.
 
 ## Sumário
 - [Fundamentação Teórica](#fundamentação-teórica)
@@ -24,11 +24,11 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
     - [Aplicação C](#aplicação-c)
   - [Blocos funcionais](#blocos-funcionais)
     - [ghrd_top](#ghrd_top)
-    - [Unidade de controle](#Unidade-de-Controle-UnidadeDeControle)
+    - [Unidade de controle](#unidade-de-controle-unidadedecontrole)
     - [Detector de borda e trava de pulso](#Detector-de-borda-e-trava-de-pulso-rising_edge_detector-e-pulse_latch)
     - [Gerenciador de camadas](#Gerenciador-de-camadas-MEF_geral_layer)
     - [motorVideoTop](#motorvideotop)
-    - [Motor de Sprites](#Motor-de-sprites-motorSprites_Blitter)
+    - [Motor de _Sprites_](#Motor-de-sprites-motorSprites_Blitter)
     - [Rasterizador de polígonos](#Rasterizador-de-polígonos-motorPol)
   - [Análise de recursos](#Análise-de-resursos)
   - [Teste Desenvolvido](#teste-desenvolvido)
@@ -39,27 +39,25 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
   
 # Fundamentação Teórica
 
-A compreensão e o desenvolvimento deste coprocessador gráfico programável fundamentam-se em conceitos centrais da engenharia de computadores e sistemas digitais: a sincronização entre domínios heterogêneos de processamento por meio de protocolos de *handshake*, a dinâmica temporal imposta pelo atraso de propagação dos sinais lógicos, e o princípio de funcionamento e organização das unidades de controle em arquiteturas de computadores.
+A compreensão e o desenvolvimento deste coprocessador gráfico programável fundamentam-se em conceitos centrais da engenharia de computadores e sistemas digitais: a sincronização entre domínios heterogêneos de processamento por meio de protocolos de _handshake_, a dinâmica temporal imposta pelo atraso de propagação dos sinais lógicos, e o princípio de funcionamento e organização das unidades de controle em arquiteturas de computadores.
 
 ## Protocolo de Handshake e Aplicação no Sistema
 
-### Conceito Teórico
-Em sistemas computacionais integrados, é recorrente a interação entre módulos que operam em frequências de *clock* diferentes, possuem latências de processamento distintas ou pertencem a domínios de temporização independentes (assíncronos entre si). Nesses cenários, a transferência de dados não pode ocorrer de forma incondicional ou contínua, pois haveria riscos de perda de dados (*overflow* do receptor) ou de leitura antes que os dados estivessem estáveis (*underflow* ou amostragem inconsistente).
+Em sistemas computacionais integrados, é recorrente a interação entre módulos que operam em frequências de _clock_ diferentes, possuem latências de processamento distintas ou pertencem a domínios de temporização independentes (assíncronos entre si). Nesses cenários, a transferência de dados não pode ocorrer de forma incondicional ou contínua, pois haveria riscos de perda de dados (_overflow_ do receptor) ou de leitura antes que os dados estivessem estáveis (_underflow_ ou amostragem inconsistente).
 
-O **protocolo de *handshake*** (ou aperto de mão) é um mecanismo de controle de fluxo e sincronização baseado na troca explícita de sinais de requisição e reconhecimento (confirmação). Em sua forma completa de quatro fases (*four-phase handshake* ou *full handshake*):
-1. **Verificação e Envio**: O mestre averigua se o receptor está pronto (*Ready*). Se positivo, estabiliza os dados no barramento e ativa uma linha de requisição/ativação (*Request* ou *Ativa*).
-2. **Reconhecimento**: O receptor detecta o sinal de ativação, captura os dados estáveis e aciona uma linha de confirmação (*Acknowledge* ou *Valid*), sinalizando que recebeu ou iniciou o processamento.
-3. **Desativação da Requisição**: O mestre detecta a confirmação do receptor, abaixa a linha de requisição e sinaliza liberação (*Clear*).
-4. **Restabelecimento**: O receptor percebe a desativação da requisição, desativa o sinal de confirmação e volta ao estado de prontidão (*Ready*), concluindo o ciclo de comunicação.
+O **protocolo de _handshake_** (ou aperto de mão) é um mecanismo de controle de fluxo e sincronização baseado na troca explícita de sinais de requisição e reconhecimento (confirmação). Em sua forma completa de quatro fases (_four-phase handshake_ ou _full handshake_):
+1. **Verificação e Envio**: O mestre averigua se o receptor está pronto (_Ready_). Se positivo, estabiliza os dados no barramento e ativa uma linha de requisição/ativação (_Request_ ou Ativa).
+2. **Reconhecimento**: O receptor detecta o sinal de ativação, captura os dados estáveis e aciona uma linha de confirmação (_Acknowledge_ ou _Valid_), sinalizando que recebeu ou iniciou o processamento.
+3. **Desativação da Requisição**: O mestre detecta a confirmação do receptor, abaixa a linha de requisição e sinaliza liberação (_Clear_).
+4. **Restabelecimento**: O receptor percebe a desativação da requisição, desativa o sinal de confirmação e volta ao estado de prontidão (_Ready_), concluindo o ciclo de comunicação.
 
-### Aplicação do Handshake no Projeto
-No sistema desenvolvido na plataforma DE1-SoC, a comunicação se estabelece entre o **HPS** (*Hard Processor System*, com processador ARM Cortex-A9 rodando Linux) e o **Coprocessador Gráfico** implementado na malha de lógica programável da FPGA (operando com relógio próprio). A ponte de comunicação utilizada é a *Lightweight HPS-to-FPGA AXI Bridge*, cujos registradores são mapeados pelo *driver* em Assembly ARM (`driver.S`) através do mapeamento de memória física `/dev/mem` via chamada de sistema `mmap`.
+No sistema desenvolvido na plataforma DE1-SoC, a comunicação se estabelece entre o **HPS** (_Hard Processor System_, com processador ARM Cortex-A9 rodando Linux) e o **Coprocessador Gráfico** implementado na malha de lógica programável da FPGA (operando com relógio próprio). A ponte de comunicação utilizada é a _Lightweight HPS-to-FPGA AXI Bridge_, cujos registradores são mapeados pelo _driver_ em Assembly ARM (`driver.S`) através do mapeamento de memória física `/dev/mem` via chamada de sistema `mmap`.
 
-Como o HPS executa o *software* em alta velocidade e sob o escalonamento do sistema operacional, o envio de cada instrução de 32 bits requer coordenação rigorosa com a máquina de estados do coprocessador. O protocolo foi materializado através de portas de entrada/saída paralelas (PIOs):
+Como o HPS executa o _software _em alta velocidade e sob o escalonamento do sistema operacional, o envio de cada instrução de 32 bits requer coordenação rigorosa com a máquina de estados do coprocessador. O protocolo foi materializado através de portas de entrada/saída paralelas (PIOs):
 
 1. **`PIO_READY` (FPGA → HPS)**: O *driver* do HPS lê continuamente este registrador antes de transmitir qualquer instrução (`wait_ready`). A Unidade de Controle na FPGA só coloca `ready = 1` quando se encontra no estado `FETCH`, indicando capacidade de receber novas ordens.
 2. **`PIO_INST` (HPS → FPGA)**: Barramento de 32 bits no qual o HPS escreve a palavra da instrução montada.
-3. **`PIO_ATIVA` (HPS → FPGA)**: Após escrever a instrução, o HPS escreve `1` nesta porta para sinalizar a disponibilidade do dado. Na FPGA, esse sinal passa pelo módulo `rising_edge_detector.v`, gerando um pulso síncrono de exatamente um ciclo de *clock* (`ativa_pulse`), o que previne múltiplos disparos espúrios.
+3. **`PIO_ATIVA` (HPS → FPGA)**: Após escrever a instrução, o HPS escreve `1` nesta porta para sinalizar a disponibilidade do dado. Na FPGA, esse sinal passa pelo módulo `rising_edge_detector.v`, gerando um pulso síncrono de exatamente um ciclo de _clock_ (`ativa_pulse`), o que previne múltiplos disparos espúrios.
 4. **`PIO_VALID` (FPGA → HPS)**: Ao entrar no estado `DECODE`, a Unidade de Controle gera um pulso de validação (`valid_pulse`). Para evitar que o HPS perca esse pulso rápido de hardware (devido à latência de leitura do barramento pelo Linux), foi incorporado o módulo `pulse_latch.v`. Este circuito funciona como uma trava de bit (*sticky ACK*), mantendo a linha `valid` em nível alto até intervenção do HPS.
 5. **`PIO_CLEAR` (HPS → FPGA)**: Ao detectar `PIO_VALID == 1`, o HPS desativa `PIO_ATIVA` (escreve `0`) e pulsa a linha `PIO_CLEAR` (escreve `1`), acionando o reset da trava do `pulse_latch.v`. O *driver* aguarda a confirmação de descida de `PIO_VALID == 0`, finaliza a limpeza de `PIO_CLEAR` e encerra a transação com segurança garantida.
 
@@ -67,18 +65,16 @@ Esse fluxo estruturado elimina qualquer probabilidade de sobrescrita acidental d
 
 ## Tempo de Propagação em Circuitos Digitais
 
-### Fundamentação Teórica
-Em circuitos lógicos digitais e semicondutores complementares (CMOS), os sinais não transitam instantaneamente entre os níveis lógicos $0$ e $1$. O **tempo de propagação** ($t_{pd}$ ou *propagation delay*) representa o intervalo de tempo decorrido entre a transição na entrada de uma porta lógica ou bloco funcional e a correspondente transição estável na sua saída (tipicamente medido no ponto de $50\%$ da excursão de tensão dos sinais).
+Em circuitos lógicos digitais e semicondutores complementares (CMOS), os sinais não transitam instantaneamente entre os níveis lógicos $0$ e $1$. O **tempo de propagação** ($t_{pd}$ ou _propagation delay_) representa o intervalo de tempo decorrido entre a transição na entrada de uma porta lógica ou bloco funcional e a correspondente transição estável na sua saída (tipicamente medido no ponto de $50\%$ da excursão de tensão dos sinais).
 
 Esse atraso é consequência direta de fenômenos físicos intrínsecos aos transistores de efeito de campo e às linhas condutoras da matriz da FPGA:
 - **Resistência interna de canal** dos transistores durante a comutação;
-- **Capacitâncias parasitas** de porta, dreno e das trilhas metálicas de interconexão (*interconnect delay*);
+- **Capacitâncias parasitas** de porta, dreno e das trilhas metálicas de interconexão (_interconnect delay_);
 - **Topologia e profundidade lógica** da rede combinacional (número de portas em cascata até o destino).
 
-### Restrições Temporais em Circuitos Síncronos
-Em sistemas digitais síncronos regidos por relógio (*clock*), os tempos de propagação estabelecem o limite máximo para a frequência de operação ($f_{max} = 1 / T_{clk}$). Para que os dados sejam amostrados corretamente pelos registradores e *flip-flops* biestáveis, devem ser respeitadas duas condições essenciais:
-1. **Tempo de *Setup* ($t_{su}$)**: O sinal de dados na entrada do registrador deve permanecer estável antes da borda ativa do *clock* por um intervalo mínimo $t_{su}$.
-2. **Tempo de *Hold* ($t_{h}$)**: O sinal de dados deve continuar estável após a ocorrência da borda ativa do *clock* por um intervalo mínimo $t_{h}$.
+Em sistemas digitais síncronos regidos por relógio (_clock_), os tempos de propagação estabelecem o limite máximo para a frequência de operação ($f_{max} = 1 / T_{clk}$). Para que os dados sejam amostrados corretamente pelos registradores e _flip-flops_ biestáveis, devem ser respeitadas duas condições essenciais:
+1. **Tempo de _Setup_ ($t_{su}$)**: O sinal de dados na entrada do registrador deve permanecer estável antes da borda ativa do *clock* por um intervalo mínimo $t_{su}$.
+2. **Tempo de _Hold_ ($t_{h}$)**: O sinal de dados deve continuar estável após a ocorrência da borda ativa do *clock* por um intervalo mínimo $t_{h}$.
 
 A equação que rege o caminho crítico combinacional mais longo ($t_{comb\_max}$) é dada por:
 
@@ -86,28 +82,26 @@ $$T_{clk} \ge t_{co} + t_{comb\_max} + t_{su}$$
 
 onde $t_{co}$ (*clock-to-output*) é o atraso entre a borda do clock e a saída do registrador de origem. Caso o atraso de propagação combinacional ultrapasse esse limite, ocorre violação de tempo de *setup*, levando o registrador a um estado de **metaestabilidade** (onde o biestável oscila ou assume tensão intermediária indefinida por período imprevisível, corrompendo a lógica do sistema).
 
-### Relevância no Contexto do Projeto
-No coprocessador gráfico em FPGA, coexistem blocos combinacionais extensos — como a geração e multiplexação de coordenadas para polígonos, cálculo de *bounding box*, endereçamento de memória RAM de blocos de fundo (*background*) e casamento de pixels na controladora VGA. 
+No coprocessador gráfico em FPGA, coexistem blocos combinacionais extensos — como a geração e multiplexação de coordenadas para polígonos, cálculo de *bounding box*, endereçamento de memória RAM de blocos de fundo (- Motor de _background_: _tilemap_ de 40×30 posições com _tiles_ de 8×8 pixels, com 256 padrões disponíveis, alteração individual de _tiles_ e deslocamento vertical e horizontal (i) da camada.) e casamento de pixels na controladora VGA. 
 
 O tempo de propagação impacta o projeto em dois eixos vitais:
-1. **Integridade de Barramento e Handshake**: Entre a escrita do valor de 32 bits em `PIO_INST` pelo HPS e o disparo de `PIO_ATIVA`, os caminhos de roteamento da FPGA impõem tempos de propagação distintos a cada uma das 32 linhas de dados. A separação estrita adotada pelo *driver* — garantindo que os dados cheguem aos pinos do registrador antes da amostragem pelo pulso de ativação — previne que a Unidade de Controle capture valores intermediários ou incompletos decorrentes de tempos de propagação desiguais nas trilhas (*skew*).
-2. **Pipelining e Estados da Unidade de Controle**: A transição escalonada em ciclos definidos (`FETCH` → `DECODE` → `SAVE`) garante que a decodificação de campos (bits de cor, tamanho, inversão de eixos e posições) esteja completamente estabilizada na lógica combinacional antes da ativação dos pulsos de escrita nos módulos de vídeo (`spr_salva_info`, `pol_salva_config`, etc.), garantindo margens de temporização (*slack*) seguras em toda a compilação do Quartus Prime.
+1. **Integridade de Barramento e Handshake**: Entre a escrita do valor de 32 bits em `PIO_INST` pelo HPS e o disparo de `PIO_ATIVA`, os caminhos de roteamento da FPGA impõem tempos de propagação distintos a cada uma das 32 linhas de dados. A separação estrita adotada pelo _driver_ — garantindo que os dados cheguem aos pinos do registrador antes da amostragem pelo pulso de ativação — previne que a Unidade de Controle capture valores intermediários ou incompletos decorrentes de tempos de propagação desiguais nas trilhas (_skew_).
+2. **Pipelining e Estados da Unidade de Controle**: A transição escalonada em ciclos definidos (`FETCH` → `DECODE` → `SAVE`) garante que a decodificação de campos (bits de cor, tamanho, inversão de eixos e posições) esteja completamente estabilizada na lógica combinacional antes da ativação dos pulsos de escrita nos módulos de vídeo (`spr_salva_info`, `pol_salva_config`, etc.), garantindo margens de temporização (_slack_) seguras em toda a compilação do Quartus Prime.
 
 ## Funcionamento da Unidade de Controle em Processadores
 
-### Princípio de Operação da Unidade de Controle
-A **Unidade de Controle (UC)** é o elemento orquestrador de qualquer arquitetura de processamento digital. Enquanto o *Datapath* (caminho de dados) é responsável por armazenar valores e efetuar operações aritméticas e lógicas (através de registradores, ULA e memórias), a Unidade de Controle atua coordenando quando e como cada elemento do *datapath* deve agir.
+A **Unidade de Controle (UC)** é o elemento orquestrador de qualquer arquitetura de processamento digital. Enquanto o _Datapath_ (caminho de dados) é responsável por armazenar valores e efetuar operações aritméticas e lógicas (através de registradores, ULA e memórias), a Unidade de Controle atua coordenando quando e como cada elemento do _datapath_ deve agir.
 
 Em uma CPU tradicional, a Unidade de Controle é responsável por governar o **ciclo de instrução**, tradicionalmente subdividido em:
-- **Busca (*Fetch*)**: Obtenção da instrução na memória e armazenamento no Registrador de Instrução (IR);
-- **Decodificação (*Decode*)**: Interpretação do código de operação (*opcode*) e identificação dos operandos e modos de endereçamento;
-- **Execução (*Execute*)**: Habilitação dos sinais de controle adequados (seleção de funções na ULA, roteamento de multiplexadores, habilitação de leitura/escrita);
-- **Armazenamento (*Write-back*)**: Atualização do estado dos registradores de destino ou gravação na memória.
+- **Busca (_Fetch_)**: Obtenção da instrução na memória e armazenamento no Registrador de Instrução (IR);
+- **Decodificação (_Decode_)**: Interpretação do código de operação (_opcode_) e identificação dos operandos e modos de endereçamento;
+- **Execução (_Execute_)**: Habilitação dos sinais de controle adequados (seleção de funções na ULA, roteamento de multiplexadores, habilitação de leitura/escrita);
+- **Armazenamento (_Write-back_)**: Atualização do estado dos registradores de destino ou gravação na memória.
 
 ### Modelos de Implementação: Cablada vs. Microprogramada
 As unidades de controle são classicamente projetadas sob duas abordagens arquiteturais:
-- **Unidade de Controle Cablada (*Hardwired Control Unit*)**: Implementada diretamente em lógica combinacional e sequencial com Máquinas de Estados Finitos (FSM). As transições e os sinais de controle são determinados por portas lógicas e registradores de estado. Caracteriza-se por baixíssima latência e máxima velocidade de processamento, sendo amplamente adotada em arquiteturas RISC e controladores dedicados em hardware/FPGA.
-- **Unidade de Controle Microprogramada (*Microprogrammed Control Unit*)**: As sequências de controle para cada instrução são armazenadas como pequenas rotinas ("microinstruções") em uma memória interna de controle (*control store* ROM). Embora facilite modificações e suporte instruções complexas (típicas de arquiteturas CISC), introduz maior latência de execução decorrente da leitura contínua da memória de controle.
+- **Unidade de Controle Cablada (_Hardwired Control Unit_)**: Implementada diretamente em lógica combinacional e sequencial com Máquinas de Estados Finitos (FSM). As transições e os sinais de controle são determinados por portas lógicas e registradores de estado. Caracteriza-se por baixíssima latência e máxima velocidade de processamento, sendo amplamente adotada em arquiteturas RISC e controladores dedicados em hardware/FPGA.
+- **Unidade de Controle Microprogramada (_Microprogrammed Control Unit_)**: As sequências de controle para cada instrução são armazenadas como pequenas rotinas ("microinstruções") em uma memória interna de controle (_control store_ ROM). Embora facilite modificações e suporte instruções complexas (típicas de arquiteturas CISC), introduz maior latência de execução decorrente da leitura contínua da memória de controle.
 
 ### A Unidade de Controle do Coprocessador Gráfico
 No coprocessador desenvolvido, a Unidade de Controle (`UnidadeDeControle.v`) foi concebida segundo a abordagem **cablada**, utilizando uma Máquina de Estados Finitos síncrona integrada ao relógio do sistema.
@@ -145,41 +139,42 @@ Dessa forma, a Unidade de Controle atua como o elo integrador entre a ISA de 32 
 
 # Manual do Sistema
 
-O seguinte projeto marca a segunda fase de um problema, que tem como propósito a construção de um coprocessador programável, controlado por instruções de 32 bits enviadas pelo HPS (Hard Processor System) através de uma ISA e uma Unidade de Controle, além do desenvolvimento de um driver e uma aplicação teste em C, deixando a base pronta para a integração com o jogo na fase final.
+O seguinte projeto marca a segunda fase de um problema, que tem como propósito a construção de um coprocessador programável, controlado por instruções de 32 bits enviadas pelo HPS através de uma ISA e uma Unidade de Controle, além do desenvolvimento de um _driver_ e uma aplicação teste em C, deixando a base pronta para a integração com o jogo na fase final.
 
 ## Requisitos do Problema
 
-O desenvolvimento do coprocessador gráfico para a fase 2 exigiu a mudança do núcleo gráfico existente anteriormente para um coprocessador programável controlado por software, eliminando o controle manual dos módulos. A arquitetura precisa incorporar uma Unidade de Busca de Instruções, Unidade de Controle, Datapath, Registrador de Instruções (IR), banco de registradores e uma Unidade Lógica e Aritmética (ULA), e os motores de background, sprites e polígonos da fase anterior passam a operar como unidades funcionais integradas neste datapath.
+O desenvolvimento do coprocessador gráfico para a fase 2 exigiu a mudança do núcleo gráfico existente anteriormente para um coprocessador programável controlado por _software_, eliminando o controle manual dos módulos. A arquitetura precisa incorporar uma Unidade de Busca de Instruções, Unidade de Controle, Datapath, Registrador de Instruções (IR), banco de registradores e uma Unidade Lógica e Aritmética (ULA), e os motores de _background_, _sprites_ e polígonos da fase anterior passam a operar como unidades funcionais integradas neste _datapath_.
 
-A partir disso, o funcionamento do sistema passa a ser ditado pelo ciclo de busca e execução de uma Instruction Set Architecture (ISA) de 32 bits, definida pela equipe, sendo que qualquer operação gráfica exibida deve resultar da execução de uma instrução dessa mesma ISA. O fornecimento de instruções pode ser feito de forma ativa, lendo ficheiros executáveis (como .mif ou .hex) a partir de uma memória interna, ou de forma passiva, recebendo uma fila de comandos do processador ARM via MMIO através de um driver escrito na linguagem de montagem Assembly ARM. Porém, em ambos os casos, é necessária a criação de um programa de demonstração em Assembly que valide a funcionalidade da ISA.
+A partir disso, o funcionamento do sistema passa a ser ditado pelo ciclo de busca e execução de uma _Instruction Set Architecture_ (ISA) de 32 bits, definida pela equipe, sendo que qualquer operação gráfica exibida deve resultar da execução de uma instrução dessa mesma ISA. O fornecimento de instruções pode ser feito de forma ativa, lendo ficheiros executáveis (como .mif ou .hex) a partir de uma memória interna, ou de forma passiva, recebendo uma fila de comandos do processador ARM via MMIO através de um _driver_ escrito na linguagem de montagem _Assembly_ ARM. Porém, em ambos os casos, é necessária a criação de um programa de demonstração em _Assembly_ que valide a funcionalidade da ISA.
 
 A geração da imagem da saída VGA deve ser estável, a partir da resolução lógica 320X240, e operar de forma independente da execução de instruções pela Unidade de Controle, sendo necessária a inclusão de uma Unidade de Controle de Quadro, um Compositor, uma Controladora VGA.
 
-O seguinte projeto marca a segunda fase de um problema, que tem como propósito a construção de um coprocessador programável, controlado por instruções de 32 bits enviadas pelo HPS (Hard Processor System) através de uma ISA e uma Unidade de Controle, além do desenvolvimento de um driver e uma aplicação teste em C, deixando a base pronta para a integração com o jogo na fase final.
+O seguinte projeto marca a segunda fase de um problema, que tem como propósito a construção de um coprocessador programável, controlado por instruções de 32 bits enviadas pelo HPS (Hard Processor System) através de uma ISA e uma Unidade de Controle, além do desenvolvimento de um _driver_ e uma aplicação teste em C, deixando a base pronta para a integração com o jogo na fase final.
 
 ## Arquitetura e Fluxo de Dados
 
-O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de barramentos de memória mapeada (MMIO), permitindo que comandos emitidos por aplicações em software sejam convertidos em primitivas gráficas aceleradas por hardware. O fluxo global de interconexão entre as camadas do sistema pode ser visualizado no diagrama a seguir:
+O sistema integra a CPU ARM do HPS ao coprocessador gráfico na FPGA por meio de barramentos de memória mapeada (MMIO), permitindo que comandos emitidos por aplicações em software sejam convertidos em primitivas gráficas aceleradas por _hardware_. O fluxo global de interconexão entre as camadas do sistema pode ser visualizado no diagrama a seguir:
 
 ![Diagrama de Alto Nível do Sistema](Imagens/Diagrama_de_alto_nivel.svg)
+Figura 1: Diagrama de Alto Nível do Sistema.
 
 ### ISA
 
-A Instruction Set Architecture (ISA) estabelece a comunicação entre o software e o hardware do coprocessador, onde cada comando é uma palavra de 32 bits, onde os três bits mais significativos (`[31:29]`) atuam como o opcode, identificando qual operação realizar. Os 29 bits restantes variam dependendo do opcode, sendo mapeados em campos específicos que contêm os operandos da instrução. As secções marcadas com X representam bits não utilizados, que são utilizados apenas para completar a dimensão da palavra.
+A _Instruction Set Architecture_ (ISA) estabelece a comunicação entre o _software_ e o _hardware_ do coprocessador, onde cada comando é uma palavra de 32 bits, onde os três bits mais significativos (`[31:29]`) atuam como o opcode, identificando qual operação realizar. Os 29 bits restantes variam dependendo do i, sendo mapeados em campos específicos que contêm os operandos da instrução. As secções marcadas com X representam bits não utilizados, que são utilizados apenas para completar a dimensão da palavra.
 
-| Instrução | Opcode [31:29]  | Campos (do bit mais significativo ao menos) | Descrição  |
+| Instrução | _Opcode_ [31:29]  | Campos (do bit mais significativo ao menos) | Descrição  |
 |:--------------:|:----:|:------:|:------:|
-| `RESET` | 001 | X…X    | Zera os registradores de saída da UC e gera um pulso de reset nos motores   |
-| `SPRITE_INFO` | 010 | camada[28:23] (6) · id[22:17] (6) · x[16:8] (9) · y[7:0] (8)    | Define posição e padrão de um sprite   |
-| `SPRITE_CONFIG`  | 011 | X[28:9] · camada[8:3] (6) · visivel[2] · flipx[1] · flipy[0]    | Define visibilidade e espelhamento de um sprite    |
+| `RESET` | 001 | X…X    | Zera os registradores de saída da UC e gera um pulso de _reset_ nos motores   |
+| `SPRITE_INFO` | 010 | camada[28:23] (6) · id[22:17] (6) · x[16:8] (9) · y[7:0] (8)    | Define posição e padrão de um _sprite_   |
+| `SPRITE_CONFIG`  | 011 | X[28:9] · camada[8:3] (6) · visivel[2] · flipx[1] · flipy[0]    | Define visibilidade e espelhamento de um _sprite_    |
 | `POL_INFO`  | 100 | X[28:21] · camada[20:19] (2) · vertice[18:17] (2) · x[16:8] (9) · y[7:0] (8)     | Define as coordenadas de um vértice de um polígono     |
 | `POL_CONFIG`  | 101| X[28:12] · camada[11:10] (2) · visivel[9] · trapezio[8] · cor[7:0] (8)     | Define cor, visibilidade e formato de um polígono   |
-| `BG_INFO`  | 110 | X[28:22] · funcao[21] · roll[20:19] (2) · x[18:13] (6) · y[12:8] (5) · cor[7:0] (8)    | Altera um tile do background ou o deslocamento (roll)    |
+| `BG_INFO`  | 110 | X[28:22] · funcao[21] · roll[20:19] (2) · x[18:13] (6) · y[12:8] (5) · cor[7:0] (8)    | Altera um tile do _background_ ou o deslocamento (roll)    |
 | `TOGGLE_LAYER ` | 111 |X[28:1] · layer[0]  | Define a ordem de sobreposição das camadas    |
 
 ### Interface HPS-CoProcessador
 
-O protocolo segue o handshake de quatro fases descrito na [Fundamentação Teórica](#protocolo-de-handshake-e-aplicação-no-sistema), que foi mapeado da seguinte forma no hardware e no driver:
+O protocolo segue o _handshake_ de quatro fases descrito na [Fundamentação Teórica](#protocolo-de-handshake-e-aplicação-no-sistema), que foi mapeado da seguinte forma no _hardware_ e no _driver_:
 
 | PIO| Offset | Largura | Sentido (visto pelo HPS) | Sinal do coprocessador|
 |:--------------:|:----:|:------:|:------:|:-------:|
@@ -189,18 +184,22 @@ O protocolo segue o handshake de quatro fases descrito na [Fundamentação Teór
 | `pio_valid` | 0x30 | 1  | entrada| `sticky_ack` (saída do `pulse_latch`)   |
 | `pio_clear` | 0x40 | 1  | saída | `clear_from_hps` (entrada do `pulse_latch`) |
 
-Na primeira fase. a verificação e envio é conduzida pelo Driver (através de `wait_ready`), que lê o sinal `pio_ready` em pooling até que atinja o valor !, realizando em seguia a escrita em `pio_inst` e definindo `pio_ativa` = 1. A segunda fase, referente ao reconhecimento, é executada pela Unidade de Controle (UC) em conjunto com o `pulse_latch`: o sinal `ativa_pulse` leva a UC do estado `FETCH` para `DECODE`, gerando o `valid_pulse`, e o módulo `pulse_latch` atua retendo o sinal `pio_valid` = 1.
+Na primeira fase. a verificação e envio é conduzida pelo _driver_ (através de `wait_ready`), que lê o sinal `pio_ready` em _pooling_ até que atinja o valor 1, realizando em seguia a escrita em `pio_inst` e definindo `pio_ativa` = 1. A segunda fase, referente ao reconhecimento, é executada pela Unidade de Controle (UC) em conjunto com o `pulse_latch`: o sinal `ativa_pulse` leva a UC do estado `FETCH` para `DECODE`, gerando o `valid_pulse`, e o módulo `pulse_latch` atua retendo o sinal `pio_valid` = 1.
 
-Na terceira fase, de desativação da requisição, o driver assume novamente o controle (via `wait_valid_1`) e, ao verificar a condição de `pio_valid` = 1, escreve `pio_clear` = 1 e reduz `pio_ativa` = 0. A quarta e última fase é operada de forma combinada pelo `pulse_latch` e pelo driver (`wait_valid_0`). Nesta etapa de encerramento do ciclo, o latch zera o sinal `pio_valid`, fazendo com que o driver aguarde a leitura de `pio_valid` = 0 para finalmente escrever `pio_clear` = 0.
+Na terceira fase, de desativação da requisição, o _driver_ assume novamente o controle (via `wait_valid_1`) e, ao verificar a condição de `pio_valid` = 1, escreve `pio_clear` = 1 e reduz `pio_ativa` = 0. A quarta e última fase é operada de forma combinada pelo `pulse_latch` e pelo _driver_ (`wait_valid_0`). Nesta etapa de encerramento do ciclo, o latch zera o sinal `pio_valid`, fazendo com que o driver aguarde a leitura de `pio_valid` = 0 para finalmente escrever `pio_clear` = 0.
 
-O protocolo de quatro fases pode ser representado através do diagrama a seguir: IMAGEM
+O protocolo de quatro fases pode ser representado através do diagrama a seguir: 
 
-### Driver Assembly
+![Protocolo de 4 fases do handshake](Imagens/protocolodehandshake.png)
+Figura 2: Protocolo de 4 fases do _Handshake_.
 
-O driver do sistema foi desenvolvido na linguagem Assembly ARM e opera através da utilização direta de chamadas de sistema Linux, e a sua integração acontece a partir de código escrito em C. A estrutura do driver está dividida em funções com diferentes objetivos: a função `abrir_memoria` é responsável por invocar open("/dev/mem", O_RDWR | O_SYNC), seguida da execução de `mmap2` para mapear a janela de 2 MB pertencente à ponte lightweight no endereço `0xFF200000`. Em caso de sucesso, devolve o ponteiro virtual base e guarda globalmente as variáveis `g_fd` e `g_virtual_base`, ou devolve -1 caso ocorra um erro. 
+### _Driver Assembly_
+
+O _driver_ do sistema foi desenvolvido na linguagem _Assembly_ ARM e opera através da utilização direta de chamadas de sistema _Linux_, e a sua integração acontece a partir de código escrito em C. A estrutura do _driver_ está dividida em funções com diferentes objetivos: a função `abrir_memoria` é responsável por invocar `open("/dev/mem", O_RDWR | O_SYNC)`, seguida da execução de `mmap2` para mapear a janela de 2 MB pertencente à ponte _lightweight_ no endereço `0xFF200000`. Em caso de sucesso, devolve o ponteiro virtual base e guarda globalmente as variáveis `g_fd` e `g_virtual_base`, ou devolve -1 caso ocorra um erro. 
+
 O fim deste acesso é feito pela função `fechar_memoria`, que executa as instruções `munmap` e `close`, e as variáveis globais são limpas. 
 
-Já a função `enviar_instrucao` tem o papel de executar o handshake, descrito anteriormente neste documento, para a palavra de 32 bits recebida no registador `r0`. As restantes funções de envio (`enviar_reset`, `enviar_sprite_info`, `enviar_sprite_config`, `enviar_pol_info`, `enviar_pol_config`, `enviar_bg_info` e `enviar_toggle_layer`) são encarregadas de montar a palavra de instrução de 32 bits através do uso da instrução `bfi` (bit field insert), que insere cada campo na sua exata posição definida pela ISA. Com a montagem finalizada, estas funções chamam a `enviar_instrucao`, preservando o registador `lr` daquele que chamou a função.
+Já a função `enviar_instrucao` tem o papel de executar o _handshake_, descrito anteriormente neste documento, para a palavra de 32 bits recebida no registador `r0`. As restantes funções de envio (`enviar_reset`, `enviar_sprite_info`, `enviar_sprite_config`, `enviar_pol_info`, `enviar_pol_config`, `enviar_bg_info` e `enviar_toggle_layer`) são encarregadas de montar a palavra de instrução de 32 bits através do uso da instrução `bfi` (_bit field insert_), que insere cada campo na sua exata posição definida pela ISA. Com a montagem finalizada, estas funções chamam a `enviar_instrucao`, preservando o registador `lr` daquele que chamou a função.
 
 ### Aplicação C
 
@@ -212,13 +211,13 @@ Nesta seção, serão descritos apenas os módulos criados na fase 2 do problema
 
 ### `ghrd_top`
 
-Novo top-level do projeto, baseado no projeto de referência da Terasic e adaptado para o coprocessador. Recebe o clock de 50 MHz (`CLOCK_50`), o botão `KEY[0]` de reset e todos os pinos do HPS, e entrega os sinais de vídeo VGA. 
+Novo _top-level_ do projeto, baseado no projeto de referência da Terasic e adaptado para o coprocessador. Recebe o _clock_ de 50 MHz (`CLOCK_50`), o botão `KEY[0]` de reset e todos os pinos do HPS, e entrega os sinais de vídeo VGA. 
 
-Possui três blocos principais: o primeiro é o PLL CLOCK_100MGH, que gera o clock de 100 MHz (`outclk_0`) a partir do de 50 MHz; o segundo é o sistema `soc_system`, que contém o HPS, a ponte lightweight e os cinco PIOs do handshake, exportados como os fios `instrucao`, `ativa`, `ready`, `valid` e `clear`; e o terceiro é o `top_sistema`, que recebe esses cinco fios, o clock de 100 MHz e o reset, e produz `VGA_R/G/B`, `VGA_HS`, `VGA_VS`, `VGA_CLK`, `VGA_BLANK_N`, `VGA_SYNC_N`.
+Possui três blocos principais: o primeiro é o PLL `CLOCK_100MGH`, que gera o _clock_ de 100 MHz (`outclk_0`) a partir do de 50 MHz; o segundo é o sistema `soc_system`, que contém o HPS, a ponte _lightweight_ e os cinco PIOs do _handshake_, exportados como os fios `instrucao`, `ativa`, `ready`, `valid` e `clear`; e o terceiro é o `top_sistema`, que recebe esses cinco fios, o _clock_ de 100 MHz e o _reset_, e produz `VGA_R/G/B`, `VGA_HS`, `VGA_VS`, `VGA_CLK`, `VGA_BLANK_N`, `VGA_SYNC_N`.
 
 ### Unidade de Controle (`UnidadeDeControle`)
 
-Bloco que substitui o `controlador_MEF`, que antes lia botões e chaves e gerava pulsos de escrita, a Unidade de Controle recebe a palavra de 32 bits (`instrucao`), o sinal `ativa`, o clock e o reset. 
+Bloco que substitui o `controlador_MEF`, que antes lia botões e chaves e gerava pulsos de escrita, a Unidade de Controle recebe a palavra de 32 bits (`instrucao`), o sinal `ativa`, o _clock_ e o _reset_. 
 
 Possui quatro tipos de saída: os barramentos de campos de cada motor (`spr_write_*`, `pol_*`, `bg_*`), os pulsos de escrita (`spr_salva_info`, `spr_salva_config`, `pol_salva_info`, `pol_salva_config`, `bg_salva_info`, `bg_WRoll`, `geral_layer_save`), o bit `geral_layer` e os sinais de protocolo `ready`, `valid` e `reset`. 
 
@@ -244,9 +243,9 @@ Esse módulo junta a MEF, os três motores e o multiplexador final. Ele recebe a
 
 Em relação ao problema 1, houveram três mudanças: novas portas de escrita separadas (`pol_salva_info`, `pol_salva_config`, `spr_write_en_info`, `spr_write_en_config`) e a entrada `layer_order`; o início do _blitter_, agora por pulso de borda sobre `enableSprt`, para que ele não reinicie enquanto o estado `SPRT` durar; e, por fim, o multiplexador deixou de ser combinacional e passou a ser registrado: endereço, pixel e `wren` são amostrados na borda de descida do _clock_, o que dá meio ciclo de margem para os sinais dos motores, que mudam na borda de subida, se estabilizarem antes da escrita na RAM, e protege o `FrameBuffer` de _glitches_.
 
-### Motor de Sprites (`motorSprites_Blitter`)
+### Motor de _Sprites_ (`motorSprites_Blitter`)
 
-O motor possui uma matriz (`oam`) com 64 entradas de 32 bits, uma por sprite. Cada entrada guarda, do bit mais significativo ao menos, a posição x (9 bits), a posição y (8 bits), o identificador do padrão (6 bits), `flip_x`, `flip_y` e `visivel`, com os 6 bits menos significativos livres. A escrita usa dois sinais separados: `spr_write_en_info` regrava x, y e id e preserva os 9 bits menos significativos, enquanto `spr_write_en_config` regrava os três bits de configuração e preserva `[31:9]`.
+O motor possui uma matriz (`oam`) com 64 entradas de 32 bits, uma por _sprite_. Cada entrada guarda, do bit mais significativo ao menos, a posição x (9 bits), a posição y (8 bits), o identificador do padrão (6 bits), `flip_x`, `flip_y` e `visivel`, com os 6 bits menos significativos livres. A escrita usa dois sinais separados: `spr_write_en_info` regrava x, y e id e preserva os 9 bits menos significativos, enquanto `spr_write_en_config` regrava os três bits de configuração e preserva `[31:9]`.
 
 ### Rasterizador de Polígonos (`motorPol`)
 
@@ -258,13 +257,16 @@ Diferente do problema 1, o módulo agora usa um _clock_ dividido por 4 (`divisor
 
 É possível visualizar, na análise de recursos, que o projeto utilizou 11.606 ALMs (36% dos 32.070 disponíveis), 16.390 registradores, 1.886.208 bits de memória de bloco (46% dos 4.065.280) e 1 PLL (17%), além de 382 pinos (84%) e 1 DLL (25%). Em relação ao Problema 1, que usava 8.314 ALMs (26%), 11.985 registradores e 1.359.872 bits de memória (33%), houve aumento de cerca de 40% na lógica e nos registradores e de cerca de 39% na memória. Esse acréscimo é explicado pela Unidade de Controle, pela interface de _handshake_ e, principalmente, pelo sistema do HPS. O uso de blocos DSP permaneceu em 80 dos 87 (92%), igual ao do Problema 1.
 
+![Analise de recursos](Imagens/analisederecursos.jpeg)
+Figura 3: Análise de recursos
+
 ## Teste desenvolvido
 
-O teste de validação do sistema é a sequência completa, presente na opção 9 do menu da aplicação em C. Ela envia ao coprocessador, pelo HPS, um pequeno programa gráfico que usa todas as instruções operacionais da ISA e aciona os três motores ao mesmo tempo. Com isso, ela realiza o caminho completo: aplicação em C, driver em Assembly, handshake, Unidade de Controle, motores gráficos, compositor e saída VGA. 
+O teste de validação do sistema é a sequência completa, presente na opção 9 do menu da aplicação em C. Ela envia ao coprocessador, pelo HPS, um pequeno programa gráfico que usa todas as instruções operacionais da ISA e aciona os três motores ao mesmo tempo. Com isso, ela realiza o caminho completo: aplicação em C, _driver_ em _Assembly_, handshake, Unidade de Controle, motores gráficos, compositor e saída VGA. 
 
-A sequência de testes tem início com o envio da instrução `RESET`, limpando qualquer elemento que esteja na tela. Em seguida, a instrução `SPRITE_INFO 1, 5, 200, 200` é enviada para validar a escrita da parte info do sprite, com o padrão de identificação 5 e a posição (200, 200). O passo seguinte é o envio de `SPRITE_CONFIG 1, 1, 0, 1` para validar a escrita da parte config, testando se a imagem fica visível, sem espelhamento horizontal e com espelhamento vertical. O resultado visível esperado é o aparecimento do sprite já espelhado verticalmente, na posição 200, 200.
+A sequência de testes tem início com o envio da instrução `RESET`, limpando qualquer elemento que esteja na tela. Em seguida, a instrução `SPRITE_INFO 1, 5, 200, 200` é enviada para validar a escrita da parte info do _sprite_, com o padrão de identificação 5 e a posição (200, 200). O passo seguinte é o envio de `SPRITE_CONFIG 1, 1, 0, 1` para validar a escrita da parte config, testando se a imagem fica visível, sem espelhamento horizontal e com espelhamento vertical. O resultado visível esperado é o aparecimento do sprite já espelhado verticalmente, na posição 200, 200.
 
-Seguidamente, a instrução `BG_INFO 0, 2, 10, 20, 255` é enviada para validar a escrita de um tile no background utilizando a instrução `funcao` = 0. Como consequência, o monitor deverá exibir o tile posicionado nas coordenadas (10, 20) com o padrão 255 no tilemap.
+Seguidamente, a instrução `BG_INFO 0, 2, 10, 20, 255` é enviada para validar a escrita de um _tile_ no _background_ utilizando a instrução `funcao` = 0. Como consequência, o monitor deverá exibir o _tile_ posicionado nas coordenadas (10, 20) com o padrão 255 no _tilemap_.
 
 A quinta etapa envolve a repetição da instrução `POL_INFO 0, 0..3, ...` por quatro vezes para validar a escrita dos quatro vértices correspondentes ao polígono 0: (0,0), (100,0), (100,100) e (0,100). Nesta fase, nada aparece no monitor, visto que ainda falta definir a configuração de desenho da forma geométrica. O sexto teste utiliza a instrução `POL_CONFIG 0, 1, 0, 200` para validar a escrita de configuração final do polígono, ativando sua visibilidade com o formato `trapezio`= 0 e a cor 200. Então, a tela passará a mostrar um triângulo preenchido com a cor 200.
 
@@ -272,14 +274,20 @@ Por fim, a instrução `TOGGLE_LAYER 1` é enviada para testar a definição da 
 
 Porém, há um problema nos testes desenvolvidos, pois as posições usadas não se sobrepõem. O polígono ocupa a região de 0,0 a 100,100, o sprite fica em 200,200. Por isso, a sequência não demonstra visualmente a prioridade entre as camadas de sprites e de polígonos. Para verificar essa funcionalidade, é necessário que o próprio usuário sobreponha um sprite com um polígono e altere a ordem das camadas. 
 
+![Teste com a alternância de camadas, sprites por cima de polígonos]()
+Figura 4: Teste com a alternância de camadas, _sprites_ por cima de polígonos
+
+![Teste com a alternância de camadas, polígonos por cima de sprites]()
+Figura 5: Teste com a alternância de camadas, polígonos por cima de _sprites_
+
 # Testes e Erros
 
 ## Estabilização Temporal e Ajuste de Clock no Motor de Polígonos
 
-Durante o desenvolvimento desta fase, o módulo responsável pela rasterização de formas geométricas (triângulos e quadriláteros/trapézios) apresentou o maior desafio de temporização de todo o coprocessador gráfico. Para solucionar problemas de oscilação visual e garantir fidelidade geométrica na saída de vídeo, foram implementadas alterações que aumentaram o tempo entre os ciclos de *clock* dedicados à varredura e ao cálculo do motor de polígonos.
+Durante o desenvolvimento desta fase, o módulo responsável pela rasterização de formas geométricas (triângulos e quadriláteros/trapézios) apresentou o maior desafio de temporização de todo o coprocessador gráfico. Para solucionar problemas de oscilação visual e garantir fidelidade geométrica na saída de vídeo, foram implementadas alterações que aumentaram o tempo entre os ciclos de _clock_ dedicados à varredura e ao cálculo do motor de polígonos.
 
 ### A Complexidade dos Cálculos de Aresta
-Diferente de elementos como blocos de fundo (*background*) ou *sprites* — que realizam predominantemente leituras indexadas em tabelas de memória —, o motor de polígonos necessita avaliar matematicamente a inclusão geométrica de cada pixel da tela em tempo real durante a varredura.
+Diferente de elementos como blocos de fundo (_background_) ou _sprites_ — que realizam predominantemente leituras indexadas em tabelas de memória —, o motor de polígonos necessita avaliar matematicamente a inclusão geométrica de cada pixel da tela em tempo real durante a varredura.
 
 Para determinar se um pixel pertence ao interior da forma, o circuito executa o algoritmo do produto vetorial bidimensional para cada uma das arestas do polígono. Essa avaliação é estruturada em uma cascata estritamente combinacional:
 
@@ -292,26 +300,28 @@ Para determinar se um pixel pertence ao interior da forma, o circuito executa o 
 Como essa cadeia de cálculos é realizada em paralelo para múltiplas arestas e múltiplos polígonos simultâneos, o sinal precisa atravessar uma sequência profunda de portas lógicas e blocos multiplicadores antes de gerar o pixel final:
 
 ![Caminho Crítico Combinacional do Gerador de Polígonos](Imagens/calculo_aresta_poligono.svg)
+Figura 6: Caminho Crítico Combinacional do Gerador de Polígonos
 
-### O Problema do Ciclo de Clock Curto
-Quando o motor de polígonos operava diretamente sob a frequência mais alta do sistema, o intervalo de tempo entre duas bordas ativas de *clock* era extremamente estreito. 
+### O Problema do Ciclo de _Clock_ Curto
+Quando o motor de polígonos operava diretamente sob a frequência mais alta do sistema, o intervalo de tempo entre duas bordas ativas de _clock_ era extremamente estreito. 
 
 Como as operações de multiplicação e subtração encadeadas demandam um tempo físico considerável para que as correntes transitem pelos transistores e as capacitâncias das trilhas se carreguem, o tempo de propagação combinacional ultrapassava a duração do ciclo. 
 
-Dessa forma, a borda ativa do *clock* seguinte chegava antes que os resultados dos multiplicadores tivessem alcançado seus níveis de tensão finais estáveis. Essa violação do tempo de *setup* provocava a captura de dados em plena fase de transição (ruídos e valores espúrios), resultando em cintilações, falhas no preenchimento interno e deformações nos vértices dos polígonos exibidos na tela.
+Dessa forma, a borda ativa do _clock_ seguinte chegava antes que os resultados dos multiplicadores tivessem alcançado seus níveis de tensão finais estáveis. Essa violação do tempo de _setup_ provocava a captura de dados em plena fase de transição (ruídos e valores espúrios), resultando em cintilações, falhas no preenchimento interno e deformações nos vértices dos polígonos exibidos na tela.
 
-### O Mecanismo de Estabilização por Aumento do Período de Clock
+### O Mecanismo de Estabilização por Aumento do Período de _Clock_
 Para sanar em definitivo essa limitação física, foi aplicada uma alteração arquitetural que estendeu o tempo entre os pulsos de relógio do motor de polígonos (reduzindo a frequência de varredura do módulo em quatro vezes em relação ao relógio base).
 
-Ao multiplicar o período do ciclo de *clock*, estabeleceu-se uma dinâmica temporal favorável:
+Ao multiplicar o período do ciclo de _clock_, estabeleceu-se uma dinâmica temporal favorável:
 
 - **Acomodação Completa da Cadeia Matemática**: O tempo disponível entre pulsos passou a ser muito superior ao atraso máximo acumulado pelas subtrações, multiplicações e comparadores;
 - **Criação de Ampla Janela de Estabilidade**: As contas complexas completam sua propagação logo na primeira porção do ciclo estendido. O sinal resultante atinge seu valor definitivo e permanece em repouso elétrico por um longo intervalo antes da borda de amostragem;
-- **Eliminação de Violações e Glitches**: Com os tempos de *setup* e *hold* amplamente respeitados, o circuito de saída captura dados perfeitamente consistentes, eliminando a ocorrência de metaestabilidade e garantindo bordas nítidas e preenchimento sólido na imagem.
+- **Eliminação de Violações e _Glitches_**: Com os tempos de _setup_ e _hold_ amplamente respeitados, o circuito de saída captura dados perfeitamente consistentes, eliminando a ocorrência de metaestabilidade e garantindo bordas nítidas e preenchimento sólido na imagem.
 
 O diagrama comparativo abaixo ilustra a diferença de comportamento entre o ciclo original insuficiente e o ciclo estendido:
 
 ![Comparativo de Temporização e Estabilização de Clock](Imagens/estabilizacao_temporizacao_clock.svg)
+Figura 7: Comparativo de Temporização e Estabilização de Clock
 
 ## Escrita única nos motores de sprites e polígonos
 
@@ -338,6 +348,10 @@ versão com erro:
 oam[spr_write_idx] <= {oam[spr_write_idx][31:9], spr_write_flip_x, spr_write_flip_y, spr_write_visivel, 5'd0};
 ```
 A concatenação tinha 23 + 3 + 5 = 31 bits, mas `oam` tem 32 bits. Porém, o Verilog completa o bit mais significativo com zero e compila normalmente, e o efeito é que a palavra inteira era deslocada em um bit para baixo a cada escrita de config, “perdendo” o bit mais significativo de x. O resultado observado foi que _sprites_ apareciam na posição errada.
+
+Imagens de alguns testes realizados durante o desenvolvimento da fase 2:
+
+
 
 # Manual de Uso
 
