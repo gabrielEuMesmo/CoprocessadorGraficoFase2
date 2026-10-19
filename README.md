@@ -30,7 +30,7 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
     - [motorVideoTop](#motorvideotop)
     - [Motor de Sprites](#Motor-de-sprites-motorSprites_Blitter)
     - [Rasterizador de polígonos](#Rasterizador-de-polígonos-motorPol)
-  - [Análise de recursos](#Analise-de-resursos)
+  - [Análise de recursos](#Análise-de-resursos)
   - [Teste Desenvolvido](#teste-desenvolvido)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
