@@ -12,7 +12,7 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
 
 ## Sumário
 - [Fundamentação Teórica](#fundamentação-teórica)
-  - [Protocolo de Handshake e Aplicação no Sistema](#protocolo-de-handshake-e-aplicação-no-sistema)
+  - [Protocolo de _Handshake_ e Aplicação no Sistema](#protocolo-de-handshake-e-aplicação-no-sistema)
   - [Tempo de Propagação em Circuitos Digitais](#tempo-de-propagação-em-circuitos-digitais)
   - [Funcionamento da Unidade de Controle em Processadores](#funcionamento-da-unidade-de-controle-em-processadores)
 - [Manual do Sistema](#manual-do-sistema)
@@ -20,16 +20,17 @@ O projeto continua sendo executado na plataforma de desenvolvimento De1-SoC, des
   - [Arquitetura e Fluxo de Dados](#arquitetura-e-fluxo-de-dados)
     - [ISA](#isa)
     - [Interface HPS-CoProcessador](#interface-hps-coprocessador)
-    - [Driver Assembly](#driver-assembly)
+    - [_Driver Assembly_](#driver-assembly)
     - [Aplicação C](#aplicação-c)
   - [Blocos funcionais](#blocos-funcionais)
     - [ghrd_top](#ghrd_top)
     - [Unidade de controle](#Unidade-de-Controle-UnidadeDeControle)
     - [Detector de borda e trava de pulso](#Detector-de-borda-e-trava-de-pulso-rising_edge_detector-e-pulse_latch)
-    - [Gerenciador de camdas](#Gerenciador-de-camadas-MEF_geral_layer)
+    - [Gerenciador de camadas](#Gerenciador-de-camadas-MEF_geral_layer)
     - [motorVideoTop](#motorvideotop)
     - [Motor de Sprites](#Motor-de-sprites-motorSprites_Blitter)
     - [Rasterizador de polígonos](#Rasterizador-de-polígonos-motorPol)
+  - [Análise de recursos](#Analise-de-resursos)
   - [Teste Desenvolvido](#teste-desenvolvido)
 - [Testes e erros](#testes-e-erros)
 - [Manual de Uso](#manual-de-uso)
@@ -252,6 +253,10 @@ O motor possui uma matriz (`oam`) com 64 entradas de 32 bits, uma por sprite. Ca
 O motor guarda quatro polígonos de 78 bits, os 68 bits menos significativos guardam os quatro vértices (17 bits cada, x com 9 bits e y com 8), e os 10 mais significativos guardam a configuração: visibilidade, formato (trapezio) e cor de 8 bits. A escrita de info escolhe o vértice pelo campo cordenada e preserva os outros três; a escrita de config regrava só os 10 bits mais signifcativos, sendo as duas escritas independentes, selecionadas por `salva_info` e `salva_config`.
 
 Diferente do problema 1, o módulo agora usa um _clock_ dividido por 4 (`divisor_por_4`, contador de 2 bits cujo bit mais significativo forma a saída), e cada coordenada fica estável por quatro ciclos do _clock_ de 100 MHz, o que dá mais tempo à lógica combinacional do rasterizador antes do multiplexador mostrar os pixels.
+
+## Análise de recursos 
+
+É possível visualizar, na análise de recursos, que o projeto utilizou 11.606 ALMs (36% dos 32.070 disponíveis), 16.390 registradores, 1.886.208 bits de memória de bloco (46% dos 4.065.280) e 1 PLL (17%), além de 382 pinos (84%) e 1 DLL (25%). Em relação ao Problema 1, que usava 8.314 ALMs (26%), 11.985 registradores e 1.359.872 bits de memória (33%), houve aumento de cerca de 40% na lógica e nos registradores e de cerca de 39% na memória. Esse acréscimo é explicado pela Unidade de Controle, pela interface de _handshake_ e, principalmente, pelo sistema do HPS. O uso de blocos DSP permaneceu em 80 dos 87 (92%), igual ao do Problema 1.
 
 ## Teste desenvolvido
 
